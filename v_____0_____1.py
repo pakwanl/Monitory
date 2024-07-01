@@ -10,6 +10,15 @@ from urllib.parse import urljoin
 import datetime
 import pytz  # Import for timezone conversion
 
+#### ----------------setting----------------- ####
+
+page_title = "Monitory"
+page_icon = ":money_with_wings:"
+layout = "wide"
+
+st.set_page_config(page_title = page_title, page_icon = page_icon, layout = layout)
+st.title(page_title)
+
 #### -----------function definition---------- ####
 
 def cleanText(text):
