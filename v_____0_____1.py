@@ -59,7 +59,7 @@ def extract_matches(text, patterns):
 
 #### ---------------data import--------------- ####
 
-uploaded_file = st.file_uploader("Upload info_pool.xlsx to continue :lightning_cloud:", type=None, accept_multiple_files=False)
+uploaded_file = st.file_uploader("Upload here :lightning_cloud:", type=None, accept_multiple_files=False)
 if uploaded_file is not None:
     url = pd.read_excel(uploaded_file, sheet_name="product")
     url = pd.DataFrame(url)
