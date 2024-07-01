@@ -70,7 +70,7 @@ if uploaded_file is not None:
     st.write("Product", url)
     st.write("Keyword pattern", patterns)
 else:
-    st.warning(":receipt: waiting for file to continue!")
+    st.warning(":receipt: waiting for uploaded file to continue!")
 
 #### --------uploaded data preparation-------- ####
 
