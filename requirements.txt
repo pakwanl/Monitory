@@ -1,5 +1,5 @@
 streamlit
-streamlit-authenticator
+streamlit-option-menu
 beautifulsoup4
 requests
 pandas
