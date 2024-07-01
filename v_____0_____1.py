@@ -8,13 +8,23 @@ import pandas as pd
 import time
 from urllib.parse import urljoin
 import datetime
-import pytz  # Import for timezone conversion
+import pytz
+from streamlit_option_menu import option_menu
 
 #### ----------------setting----------------- ####
 
 page_title = "Monitory"
 page_icon = ":money_with_wings:"
 layout = "wide"
+
+hide_st_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+    """
+st.markdown(hide_st_style, unsafe_allow_html = True)
 
 st.set_page_config(page_title = page_title, page_icon = page_icon, layout = layout)
 st.title(page_title)
