@@ -2,7 +2,7 @@
 
 Text extraction &amp; Pattern matching for monitoring retail lending products
 
-access via ** TBA **
+access **Here!!** https://monitory-bot.streamlit.app/
 
 ''' How to use the tool '''
   1. Upload file 'info_pool.xlsx' to the website
