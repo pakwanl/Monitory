@@ -189,7 +189,7 @@ def scrape_data(url, unique_set):
 
     return pd.DataFrame(flattened)
 
-if uploaded_file is not None and st.button("Scrap"):
+if uploaded_file is not None and st.button("Start Scraping!"):
     scraped_data = scrape_data(url, unique_set)
     st.session_state['scraped_data'] = scraped_data
     # st.write(":sparkler: Scraped Information :sparkler:")
