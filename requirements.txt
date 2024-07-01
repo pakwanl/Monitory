@@ -1,0 +1,7 @@
+streamlit
+streamlit-authenticator
+beautifulsoup4
+requests
+pandas
+openpyxl
+pytz
