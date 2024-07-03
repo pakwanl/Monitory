@@ -13,10 +13,6 @@ from streamlit_option_menu import option_menu
 
 #### ----------------setting----------------- ####
 
-page_title = "Monitory"
-page_icon = ":money_with_wings:"
-layout = "wide"
-
 hide_st_style = """
     <style>
     #MainMenu {visibility: hidden;}
@@ -25,9 +21,6 @@ hide_st_style = """
     </style>
     """
 st.markdown(hide_st_style, unsafe_allow_html = True)
-
-st.set_page_config(page_title = page_title, page_icon = page_icon, layout = layout)
-st.title(page_title)
 
 #### -----------function definition---------- ####
 
