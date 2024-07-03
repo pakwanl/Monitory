@@ -204,8 +204,6 @@ def scrape_data(url, unique_set):
 if uploaded_file is not None and st.button("Start Scraping!"):
     scraped_data = scrape_data(url, unique_set)
     st.session_state['scraped_data'] = scraped_data
-    st.write(":sparkler: Scraped Information :sparkler:")
-    st.write(scraped_data)
 
 #### -----------filter and display------------ ####
 
