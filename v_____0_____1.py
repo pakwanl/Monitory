@@ -212,14 +212,22 @@ if 'scraped_data' in st.session_state:
     group_filter = st.multiselect("Select Group", options=scraped_data["Group"].unique(), default=scraped_data["Group"].unique())
     
     filtered_group = scraped_data[scraped_data["Group"].isin(group_filter)]
-    
     fi_filter = st.multiselect("Select FI", options=filtered_group["FI"].unique(), default=filtered_group["FI"].unique())
-    keyword_set_filter = st.multiselect("Select Keyword Set", options=scraped_data["Keyword_Set"].unique(), default=scraped_data["Keyword_Set"].unique())
+
+    filtered_type = filtered_group[filtered_group["Product_type"].isin(fi_filter)]
+    product_type_filter = st.multiselect("Select product type", options=filtered_type["Product_type"].unique(), default=filtered_type["Product_type"].unique())
+
+    filtered_product = filtered_type[filtered_type["Product"].isin(product_type_filter)]
+    product_filter = st.multiselect("Select product", options=filtered_product["Product"].unique(), default=filtered_product["Product"].unique())
+
+    keyword_set_filter = st.multiselect("Select pattern set", options=scraped_data["Keyword_Set"].unique(),default=scraped_data["Keyword_Set"].unique())
     
     filtered_data = scraped_data[
         (scraped_data["Group"].isin(group_filter)) &
         (scraped_data["FI"].isin(fi_filter)) &
-        (scraped_data["Keyword_Set"].isin(keyword_set_filter))
+        (scraped_data["Keyword_Set"].isin(keyword_set_filter))&
+        (scraped_data["Product_type"].isin(product_type_filter))&
+        (scraped_data["Product"].isin(product_filter))
     ]
     
     st.write(":sparkler: Filtered Information :sparkler:")
