@@ -109,7 +109,7 @@ def scrape_data(url, unique_set):
     for idx, rl in enumerate(url['URL']):
         current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d %H:%M:%S")
         pdf_files = get_pdf(rl)
-        pdf.append('\n- '.join(pdf_files) if pdf_files else 'x')
+        pdf.append('\n\n- '.join(pdf_files) if pdf_files else 'x')
         scrape = get_all_text(rl)
         ws.append([scrape])
         timestamp.append(current_datetime)
@@ -177,7 +177,7 @@ def scrape_data(url, unique_set):
                     "keyword_set": set_name,
                     "keyword": key,
                     "Sentences_found": sentence_info,
-                    "Sentences": '\n- '.join(matched[key]) if matched[key] else f"ไม่พบข้อความเกี่ยวกับ '{key}'"
+                    "Sentences": '\n\n- '.join(matched[key]) if matched[key] else f"ไม่พบข้อความเกี่ยวกับ '{key}'"
                 })
 
     flattened = []
