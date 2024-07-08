@@ -9,6 +9,7 @@ import time
 from urllib.parse import urljoin
 import datetime
 import pytz
+import json
 from streamlit_option_menu import option_menu
 
 #### ----------------setting----------------- ####
@@ -21,6 +22,65 @@ hide_st_style = """
     </style>
     """
 st.markdown(hide_st_style, unsafe_allow_html = True)
+
+#### -------------Tableau connect------------ ####
+tableau_token_name = st.secrets["tableau"]["token_name"]
+tableau_token_value = st.secrets["tableau"]["token_value"]
+tableau_server_url = st.secrets["tableau"]["server_url"]
+site_id = st.secrets["tableau"]["site_id"]
+
+def tableau_auth():
+    url = f"{tableau_server_url}/api/3.8/auth/signin"
+    payload = {
+        "credentials": {
+            "personalAccessTokenName": tableau_token_name,
+            "personalAccessTokenSecret": tableau_token_value,
+            "site": {
+                "contentUrl": site_id
+            }
+        }
+    }
+    response = requests.post(url, json=payload)
+    if response.status_code != 200:
+        raise Exception(f"Tableau authentication failed: {response.content}")
+    return response.json()['credentials']['token']
+
+# Publish data function
+def publish_data_to_tableau(session_token, dataframe, datasource_name):
+    url = f"{tableau_server_url}/api/3.8/sites/{site_id}/datasources"
+    headers = {
+        "X-Tableau-Auth": session_token
+    }
+
+    # Save dataframe to CSV
+    dataframe.to_csv("data.csv", index=False)
+
+    # Prepare the multipart request
+    payload = {
+        "datasource": {
+            "name": datasource_name,
+            "project": {
+                "id": site_id
+            }
+        }
+    }
+    files = {
+        'request_payload': (None, json.dumps(payload), 'application/json'),
+        'tableau_datasource': ('data.csv', open('data.csv', 'rb'), 'application/octet-stream')
+    }
+    
+    response = requests.post(url, headers=headers, files=files)
+    if response.status_code != 201:
+        raise Exception(f"Failed to publish data to Tableau: {response.content}")
+    return response.json()
+
+# Sign out function
+def tableau_signout(session_token):
+    url = f"{tableau_server_url}/api/3.8/auth/signout"
+    headers = {
+        "X-Tableau-Auth": session_token
+    }
+    requests.post(url, headers=headers)
 
 #### -----------function definition---------- ####
 
@@ -235,3 +295,12 @@ if 'scraped_data' in st.session_state:
     
     st.write(":sparkler: Filtered Information :sparkler:")
     st.write(filtered_data)
+    
+    if st.button("Publish to Tableau"):
+            try:
+                session_token = tableau_auth()
+                publish_data_to_tableau(session_token, filtered_data, "Scraped Data")
+                tableau_signout(session_token)
+                st.success("Data published to Tableau successfully!")
+            except Exception as e:
+                st.error(f"Failed to publish data to Tableau: {e}")
