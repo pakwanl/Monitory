@@ -262,9 +262,10 @@ def scrape_data(url, unique_set):
 
     return pd.DataFrame(flattened)
 
-if uploaded_file is not None and st.button("Start Scraping!"):
-    scraped_data = scrape_data(url, unique_set)
-    st.session_state['scraped_data'] = scraped_data
+if uploaded_file is not None:
+    st.button("Start Scraping!"):
+        scraped_data = scrape_data(url, unique_set)
+        st.session_state['scraped_data'] = scraped_data
 
 #### -----------filter and display------------ ####
 
