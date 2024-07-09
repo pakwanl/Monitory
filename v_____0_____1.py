@@ -198,7 +198,7 @@ def scrape_data(url, unique_set):
     url_ = url[url.ability != 'FALSE']
     url_ = url_.reset_index(drop=True)
 
-    data = {}
+       data = {}
     for index, row in url_.iterrows():
         group = row['Group']
         bank_abb = row['Bank_abb']
@@ -241,7 +241,7 @@ def scrape_data(url, unique_set):
                     "Sentences": '\n\n- '.join(matched[key]) if matched[key] else f"ไม่พบข้อความเกี่ยวกับ '{key}'"
                 })
 
-    flattened = []
+flattened = []
     for product, details in data.items():
         for keyword_info in details["keywords"]:
             flattened.append({
