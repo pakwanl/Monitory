@@ -198,7 +198,7 @@ def scrape_data(url, unique_set):
     url_ = url[url.ability != 'FALSE']
     url_ = url_.reset_index(drop=True)
 
-       data = {}
+    data = {}
     for index, row in url_.iterrows():
         group = row['Group']
         bank_abb = row['Bank_abb']
