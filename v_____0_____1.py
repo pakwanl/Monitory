@@ -154,6 +154,7 @@ if uploaded_file is not None:
 
     url = url[url.URL != 'WIP']
     url = url[url.URL != '-']
+    url = url[url.cut = 'keep']
 
 #### --------------web scraping-------------- ####
 
