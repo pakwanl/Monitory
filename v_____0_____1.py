@@ -315,8 +315,7 @@ if 'scraped_data' in st.session_state:
     current_datetime_ymd = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d")
     
     try:
-    filtered_data_xlsx = to_excel(filtered_data, current_datetime_ymd)
-    
+        filtered_data_xlsx = to_excel(filtered_data, current_datetime_ymd)
         if filtered_data_xlsx is not None:
             st.download_button(
                 label=' Download Result',
