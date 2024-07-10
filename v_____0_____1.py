@@ -299,12 +299,29 @@ if 'scraped_data' in st.session_state:
     st.write(":sparkler: Filtered Information :sparkler:")
     st.write(filtered_data)
 
+    
     def to_excel(filtered_data,current_datetime_ymd):
         output = BytesIO()
         writer = pd.ExcelWriter(output, engine='xlsxwriter')
-        filtered_data.to_excel(writer, index=False, sheet_name=f"{current_datetime_ymd}")
-        return processed_data
+        try:
+            filtered_data.to_excel(writer, index=False, sheet_name=f"{current_datetime_ymd}")
+            writer.save()
+            return output.getvalue()
+    
+        except Exception as e:
+            print(f"Error exporting data to Excel: {e}")
+            return None
     
     current_datetime_ymd = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d")
-    filtered_data_xlsx = to_excel(filtered_data,current_datetime_ymd)
-    st.download_button(label='📥 Download Result',data= filtered_data_xlsx, file_name= f'{current_datetime_ymd}_Scraped_Data.xlsx')
+    
+    try:
+    filtered_data_xlsx = to_excel(filtered_data, current_datetime_ymd)
+    
+    if filtered_data_xlsx is not None:
+        st.download_button(
+            label=' Download Result',
+            data=filtered_data_xlsx,
+            file_name=f'{current_datetime_ymd}_Scraped_Data.xlsx')
+    except Exception as e:
+        print(f"An error occurred during processing: {e}")
+        st.download_button(label='📥 Download Result',data= filtered_data_xlsx, file_name= f'{current_datetime_ymd}_Scraped_Data.xlsx')
