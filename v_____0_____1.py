@@ -10,6 +10,8 @@ from urllib.parse import urljoin
 import datetime
 import pytz
 import json
+import xlsxwriter
+from io import BytesIO
 from streamlit_option_menu import option_menu
 
 #### ----------------setting----------------- ####
@@ -296,12 +298,19 @@ if 'scraped_data' in st.session_state:
     
     st.write(":sparkler: Filtered Information :sparkler:")
     st.write(filtered_data)
-    
-    if st.button("Publish to Tableau"):
-            try:
-                session_token = tableau_auth()
-                publish_data_to_tableau(session_token, filtered_data, "Scraped Data")
-                tableau_signout(session_token)
-                st.success("Data published to Tableau successfully!")
-            except Exception as e:
-                st.error(f"Failed to publish data to Tableau: {e}")
+
+def to_excel(filtered_data,current_datetime_ymd):
+    output = BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    filtered_data.to_excel(writer, index=False, sheet_name=f"{current_datetime_ymd}")
+    workbook = writer.book
+    worksheet = writer.sheets['Sheet1']
+    format1 = workbook.add_format({'num_format': '0.00'}) 
+    worksheet.set_column('A:A', None, format1)  
+    writer.save()
+    processed_data = output.getvalue()
+    return processed_data
+
+current_datetime_ymd = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d")
+filtered_data_xlsx = to_excel(filtered_data,current_datetime_ymd)
+st.download_button(label='📥 Download Result',data= filtered_data_xlsx, file_name= f'{current_datetime_ymd}_Scraped_Data.xlsx')
