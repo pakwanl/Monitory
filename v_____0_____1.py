@@ -303,12 +303,6 @@ if 'scraped_data' in st.session_state:
         output = BytesIO()
         writer = pd.ExcelWriter(output, engine='xlsxwriter')
         filtered_data.to_excel(writer, index=False, sheet_name=f"{current_datetime_ymd}")
-        workbook = writer.book
-        worksheet = writer.sheets['Sheet1']
-        format1 = workbook.add_format({'num_format': '0.00'}) 
-        worksheet.set_column('A:A', None, format1)  
-        writer.save()
-        processed_data = output.getvalue()
         return processed_data
     
     current_datetime_ymd = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d")
