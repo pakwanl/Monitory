@@ -3,6 +3,6 @@ streamlit-option-menu
 beautifulsoup4
 requests
 pandas
-openpyxl
+xlsxwriter
 pytz
 tableauserverclient
