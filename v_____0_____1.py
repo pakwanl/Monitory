@@ -26,6 +26,8 @@ hide_st_style = """
 st.markdown(hide_st_style, unsafe_allow_html = True)
 
 #### -------------Tableau connect------------ ####
+## Disabled Tableau Function (SSLErrors)
+
 tableau_token_name = st.secrets["tableau"]["token_name"]
 tableau_token_value = st.secrets["tableau"]["token_value"]
 tableau_server_url = st.secrets["tableau"]["server_url"]
@@ -144,7 +146,7 @@ if uploaded_file is not None:
     st.write("Product", url)
     st.write("Keyword pattern", patterns)
 else:
-    st.warning(":receipt: waiting for uploaded file to continue!")
+    st.warning(":receipt: uploading file to continue!")
 
 #### --------uploaded data preparation-------- ####
 
@@ -154,8 +156,8 @@ if uploaded_file is not None:
         pattern_dict = dict(zip(patterns[patterns['set'] == set_name]['mc'], patterns[patterns['set'] == set_name]['pattern']))
         globals()[set_name] = {key: fr"{value}" for key, value in pattern_dict.items()}
 
-    url = url[url.URL != 'WIP']
-    url = url[url.URL != '-']
+    # url = url[url.URL != 'WIP']
+    # url = url[url.URL != '-']
     url = url[url.Note == 'keep']
 
 #### --------------web scraping-------------- ####
