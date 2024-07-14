@@ -155,7 +155,10 @@ if uploaded_file is not None:
     for set_name in unique_set:
         pattern_dict = dict(zip(patterns[patterns['set'] == set_name]['mc'], patterns[patterns['set'] == set_name]['pattern']))
         globals()[set_name] = {key: fr"{value}" for key, value in pattern_dict.items()}
-
+    
+    # remark meaning 'WIP' is """ url is available, but not yet updated in pool """
+    # '-' is """ url is not available """
+    
     # url = url[url.URL != 'WIP']
     # url = url[url.URL != '-']
     url = url[url.Note == 'keep']
