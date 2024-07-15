@@ -197,7 +197,7 @@ def scrape_data(url, unique_set):
     url['scraped'] = cleaned
     url['ability'] = ability
 
-    url_ = url[url.ability != 'FALSE']
+    url_ = url  # [url.ability != 'FALSE']
     url_ = url_.reset_index(drop=True)
 
     data = {}
