@@ -26,65 +26,8 @@ hide_st_style = """
 st.markdown(hide_st_style, unsafe_allow_html = True)
 
 #### -------------Tableau connect------------ ####
+
 ## Disabled Tableau Function (SSLErrors)
-
-tableau_token_name = st.secrets["tableau"]["token_name"]
-tableau_token_value = st.secrets["tableau"]["token_value"]
-tableau_server_url = st.secrets["tableau"]["server_url"]
-site_id = st.secrets["tableau"]["site_id"]
-
-def tableau_auth():
-    url = f"{tableau_server_url}/api/3.8/auth/signin"
-    payload = {
-        "credentials": {
-            "personalAccessTokenName": tableau_token_name,
-            "personalAccessTokenSecret": tableau_token_value,
-            "site": {
-                "contentUrl": site_id
-            }
-        }
-    }
-    response = requests.post(url, json=payload)
-    if response.status_code != 200:
-        raise Exception(f"Tableau authentication failed: {response.content}")
-    return response.json()['credentials']['token']
-
-# Publish data function
-def publish_data_to_tableau(session_token, dataframe, datasource_name):
-    url = f"{tableau_server_url}/api/3.8/sites/{site_id}/datasources"
-    headers = {
-        "X-Tableau-Auth": session_token
-    }
-
-    # Save dataframe to CSV
-    dataframe.to_csv("data.csv", index=False)
-
-    # Prepare the multipart request
-    payload = {
-        "datasource": {
-            "name": datasource_name,
-            "project": {
-                "id": site_id
-            }
-        }
-    }
-    files = {
-        'request_payload': (None, json.dumps(payload), 'application/json'),
-        'tableau_datasource': ('data.csv', open('data.csv', 'rb'), 'application/octet-stream')
-    }
-    
-    response = requests.post(url, headers=headers, files=files)
-    if response.status_code != 201:
-        raise Exception(f"Failed to publish data to Tableau: {response.content}")
-    return response.json()
-
-# Sign out function
-def tableau_signout(session_token):
-    url = f"{tableau_server_url}/api/3.8/auth/signout"
-    headers = {
-        "X-Tableau-Auth": session_token
-    }
-    requests.post(url, headers=headers)
 
 #### -----------function definition---------- ####
 
@@ -298,24 +241,3 @@ if 'scraped_data' in st.session_state:
     
     st.write(":sparkler: Filtered Information :sparkler:")
     st.write(filtered_data)
-
-    
-    def to_excel(filtered_data,current_datetime_ymd):
-        output = BytesIO()
-        writer = pd.ExcelWriter(output, engine='xlsxwriter')
-        try:
-            filtered_data.to_excel(writer, index=False, sheet_name=f"{current_datetime_ymd}")
-            writer.save()
-            return output.getvalue()
-    
-        except Exception as e:
-            print(f"Error exporting data to Excel: {e}")
-            return None
-    
-    try:
-        current_datetime_ymd = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d")
-        filtered_data_xlsx = to_excel(filtered_data, current_datetime_ymd)
-        if filtered_data_xlsx is not None:
-            st.download_button(label='📥 Download Result',data= filtered_data_xlsx, file_name= f'{current_datetime_ymd}_Scraped_Data.xlsx')
-    except Exception as e:
-        print(f"An error occurred during processing: {e}")
