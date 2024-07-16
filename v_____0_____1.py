@@ -138,9 +138,9 @@ def scrape_data(url, unique_set):
 
     url['timestamp'] = timestamp
     url['scraped'] = cleaned
-    url['ability'] = ability
+    # url['ability'] = ability
 
-    url_ = url  # [url.ability != 'FALSE']
+    url_ = url[url.Status != 'x']
     url_ = url_.reset_index(drop=True)
 
     data = {}
@@ -152,6 +152,7 @@ def scrape_data(url, unique_set):
         product_type = row['Product_type']
         scraped = row['scraped']
         product = row['Product_Name']
+        status = row['Status']
         url = row['URL']
         pdf = row['Manual-Fact-Sale Sheet']
         timestamp = row['timestamp']
@@ -163,6 +164,7 @@ def scrape_data(url, unique_set):
                 "Abbreviation": bank_abb,
                 "FI": bank_name,
                 "FI_type": type_,
+                "Status" : status,
                 "product_type": product_type,
                 "URL": url,
                 "PDF": pdf,
@@ -198,6 +200,7 @@ def scrape_data(url, unique_set):
                 "Product_type": details["product_type"],
                 "URL": details["URL"],
                 "PDF": details["PDF"],
+                "Status" : details["Status"]
                 "timestamp": details["timestamp"],
                 "Keyword_Set": keyword_info["keyword_set"],
                 "keyword": keyword_info["keyword"],
