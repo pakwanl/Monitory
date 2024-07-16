@@ -6,4 +6,5 @@ pandas
 openpyxl
 xlsxwriter
 pytz
-tableauserverclient
+selenium
+webdriver-manager
