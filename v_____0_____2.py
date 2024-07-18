@@ -53,9 +53,10 @@ def get_text_html(url):
         return f"SSL error for URL '{url}': \n{e}"
 
 def get_text_java(url):
-    options = webdriver.ChromeOptions()
+    options = Options()
     options.add_argument('--headless')
-    
+
+    # Ensure webdriver_manager is installed and up to date
     try:
         result = subprocess.run(["pip", "show", "webdriver-manager"], capture_output=True, text=True)
         if "webdriver-manager" not in result.stdout:
@@ -69,8 +70,9 @@ def get_text_java(url):
     except subprocess.CalledProcessError as e:
         print(f"Error checking/upgrading webdriver_manager: {e}")
 
+    # Ensure Chrome is installed
     try:
-        result = subprocess.run(["which", "chrome"], capture_output=True, text=True)
+        result = subprocess.run(["which", "google-chrome"], capture_output=True, text=True)
         if not result.stdout.strip():
             print("Chrome not found. Please install Chrome or set the appropriate environment variable.")
             return None
@@ -88,7 +90,7 @@ def get_text_java(url):
     except Exception as e:
         return f"An error occurred: {e}"
     finally:
-        if driver:
+        if 'driver' in locals():
             driver.quit()
 
 def get_pdf(url):
