@@ -9,6 +9,7 @@ import time
 from urllib.parse import urljoin
 import datetime
 import pytz
+import subprocess
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -52,11 +53,33 @@ def get_text_html(url):
         return f"SSL error for URL '{url}': \n{e}"
 
 def get_text_java(url):
-    options = Options()
+    options = webdriver.ChromeOptions()
     options.add_argument('--headless')
-    driver_path = ChromeDriverManager().install()
+    
+    try:
+        result = subprocess.run(["pip", "show", "webdriver-manager"], capture_output=True, text=True)
+        if "webdriver-manager" not in result.stdout:
+            print("Installing webdriver-manager...")
+            subprocess.run(["pip", "install", "webdriver-manager"])
+        else:
+            current_version = result.stdout.split("\n")[1].split(": ")[-1]
+            if current_version < "0.8.3":
+                print(f"Upgrading webdriver_manager (current: {current_version})...")
+                subprocess.run(["pip", "install", "--upgrade", "webdriver-manager"])
+    except subprocess.CalledProcessError as e:
+        print(f"Error checking/upgrading webdriver_manager: {e}")
 
     try:
+        result = subprocess.run(["which", "chrome"], capture_output=True, text=True)
+        if not result.stdout.strip():
+            print("Chrome not found. Please install Chrome or set the appropriate environment variable.")
+            return None
+    except subprocess.CalledProcessError:
+        print("Error checking Chrome installation. Please ensure Chrome is installed.")
+        return None
+
+    try:
+        driver_path = ChromeDriverManager().install()
         driver = webdriver.Chrome(service=Service(driver_path), options=options)
         driver.get(url)
         page_source = driver.page_source
@@ -65,8 +88,9 @@ def get_text_java(url):
     except Exception as e:
         return f"An error occurred: {e}"
     finally:
-        driver.quit()
-    
+        if driver:
+            driver.quit()
+
 def get_pdf(url):
     try:
         response = requests.get(url)
@@ -142,14 +166,18 @@ def scrape_data(url, unique_set):
         
         if url.loc[idx, 'scrapable'] == 'Java':
             scrape = get_text_java(rl)
+            ws.append(scrape)
+            timestamp.append(current_datetime)
+            time.sleep(5)
+            progress_bar.progress(int((idx + 1) * progress_step))
         else:
             continue
             # scrape = get_text_html(rl)
-        
-        ws.append(scrape)
-        timestamp.append(current_datetime)
-        time.sleep(5)
-        progress_bar.progress(int((idx + 1) * progress_step))
+            # ws.append(scrape)
+            # timestamp.append(current_datetime)
+            # time.sleep(5)
+            # progress_bar.progress(int((idx + 1) * progress_step))
+
 
     cleaned = []
     for web in ws:
