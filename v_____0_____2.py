@@ -25,7 +25,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 #     #MainMenu {visibility: hidden;}
 #     footer {visibility: hidden;}
 #     header {visibility: hidden;}
-#     </style>
+#     </style> 
 #     """
 # st.markdown(hide_st_style, unsafe_allow_html = True)
 
@@ -168,19 +168,23 @@ def scrape_data(url, unique_set):
         
         if url.loc[idx, 'scrapable'] == 'Java':
             scrape = get_text_java(rl)
-            ws.append(scrape)
+            if scrape:
+                ws.append([scrape])
+            else:
+                ws.append([""])
             timestamp.append(current_datetime)
             time.sleep(5)
             progress_bar.progress(int((idx + 1) * progress_step))
         else:
-            continue
-            # scrape = get_text_html(rl)
-            # ws.append(scrape)
-            # timestamp.append(current_datetime)
-            # time.sleep(5)
-            # progress_bar.progress(int((idx + 1) * progress_step))
-
-
+            scrape = get_text_html(rl)
+            if scrape:
+                ws.append([scrape])
+            else:
+                ws.append([""])
+            timestamp.append(current_datetime)
+            time.sleep(5)
+            progress_bar.progress(int((idx + 1) * progress_step))
+            
     cleaned = []
     for web in ws:
         for text in web:
