@@ -75,10 +75,10 @@ def get_text_java(url):
         result = subprocess.run(["which", "google-chrome"], capture_output=True, text=True)
         if not result.stdout.strip():
             print("Chrome not found. Please install Chrome or set the appropriate environment variable.")
-            return None
+            return ""
     except subprocess.CalledProcessError:
         print("Error checking Chrome installation. Please ensure Chrome is installed.")
-        return None
+        return ""
 
     try:
         driver_path = ChromeDriverManager().install()
