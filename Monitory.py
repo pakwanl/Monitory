@@ -20,14 +20,18 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 #### ----------------setting----------------- ####
 
-# hide_st_style = """
-#     <style>
-#     #MainMenu {visibility: hidden;}
-#     footer {visibility: hidden;}
-#     header {visibility: hidden;}
-#     </style>
-#     """
-# st.markdown(hide_st_style, unsafe_allow_html = True)
+hide_st_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style> 
+    """
+st.markdown(hide_st_style, unsafe_allow_html = True)
+
+#### -------------Tableau connect------------ ####
+
+    ## Disabled Tableau Function (SSLErrors)
 
 #### -----------function definition---------- ####
 
@@ -37,7 +41,7 @@ def cleanText(text):
     newText = ' '.join(newText.split())  # Keep only one white space
     return newText
 
-def get_all_text(url):
+def get_text_html(url):
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -48,6 +52,47 @@ def get_all_text(url):
     except requests.exceptions.SSLError as e:
         return f"SSL error for URL '{url}': \n{e}"
 
+def get_text_java(url):
+    options = Options()
+    options.add_argument('--headless')
+
+    # Ensure webdriver_manager is installed and up to date
+    try:
+        result = subprocess.run(["pip", "show", "webdriver-manager"], capture_output=True, text=True)
+        if "webdriver-manager" not in result.stdout:
+            print("Installing webdriver-manager...")
+            subprocess.run(["pip", "install", "webdriver-manager"])
+        else:
+            current_version = result.stdout.split("\n")[1].split(": ")[-1]
+            if current_version < "0.8.3":
+                print(f"Upgrading webdriver_manager (current: {current_version})...")
+                subprocess.run(["pip", "install", "--upgrade", "webdriver-manager"])
+    except subprocess.CalledProcessError as e:
+        print(f"Error checking/upgrading webdriver_manager: {e}")
+
+    # Ensure Chrome is installed
+    try:
+        result = subprocess.run(["which", "google-chrome"], capture_output=True, text=True)
+        if not result.stdout.strip():
+            print("Chrome not found. Please install Chrome or set the appropriate environment variable.")
+            return ""
+    except subprocess.CalledProcessError:
+        print("Error checking Chrome installation. Please ensure Chrome is installed.")
+        return ""
+
+    try:
+        driver_path = ChromeDriverManager().install()
+        driver = webdriver.Chrome(service=Service(driver_path), options=options)
+        driver.get(url)
+        page_source = driver.page_source
+        soup = BeautifulSoup(page_source, 'html.parser')
+        return soup.get_text()
+    except Exception as e:
+        return f"An error occurred: {e}"
+    finally:
+        if 'driver' in locals():
+            driver.quit()
+
 def get_pdf(url):
     try:
         response = requests.get(url)
@@ -57,7 +102,7 @@ def get_pdf(url):
         pdf_urls = []
         for link in links:
             href = link.get('href')
-            if href and href.lower().endswith('.pdf'):
+            if href and href.lower().endswith(('.pdf')): # <- add more type of file available here
                 download_url = urljoin(url, href)
                 pdf_urls.append(download_url)
         return pdf_urls
@@ -80,14 +125,17 @@ def extract_matches(text, patterns):
 
 uploaded_file = st.file_uploader("Upload here :lightning_cloud:", type=None, accept_multiple_files=False)
 if uploaded_file is not None:
-    url = pd.read_excel(uploaded_file, sheet_name="product")
-    url = pd.DataFrame(url)
+    try:
+        url = pd.read_excel(uploaded_file, sheet_name="product")
+        url = pd.DataFrame(url)
 
-    patterns = pd.read_excel(uploaded_file, sheet_name="pattern")
-    patterns = pd.DataFrame(patterns)
+        patterns = pd.read_excel(uploaded_file, sheet_name="pattern")
+        patterns = pd.DataFrame(patterns)
 
-    st.write("Product", url)
-    st.write("Keyword pattern", patterns)
+        st.write("Product", url)
+        st.write("Keyword pattern", patterns)
+    except Exception as e:
+        st.error(f"An error occurred while reading the file: {e}")
 else:
     st.warning(":receipt: uploading file to continue!")
 
@@ -100,6 +148,7 @@ if uploaded_file is not None:
         globals()[set_name] = {key: fr"{value}" for key, value in pattern_dict.items()}
         
     url = url[url.Status == 'keep']
+    url = url.reset_index(drop=True)
 
 #### --------------web scraping-------------- ####
 
@@ -116,12 +165,26 @@ def scrape_data(url, unique_set):
         current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d %H:%M:%S")
         pdf_files = get_pdf(rl)
         pdf.append('\n\n- '.join(pdf_files) if pdf_files else 'x')
-        scrape = get_all_text(rl)
-        ws.append([scrape])
-        timestamp.append(current_datetime)
-        time.sleep(5)
-        progress_bar.progress(int((idx + 1) * progress_step))
-
+        
+        if url.loc[idx, 'scrapable'] == 'Java':
+            scrape = get_text_java(rl)
+            if scrape:
+                ws.append([scrape])
+            else:
+                ws.append([""])
+            timestamp.append(current_datetime)
+            time.sleep(5)
+            progress_bar.progress(int((idx + 1) * progress_step))
+        else:
+            scrape = get_text_html(rl)
+            if scrape:
+                ws.append([scrape])
+            else:
+                ws.append([""])
+            timestamp.append(current_datetime)
+            time.sleep(5)
+            progress_bar.progress(int((idx + 1) * progress_step))
+            
     cleaned = []
     for web in ws:
         for text in web:
@@ -129,18 +192,19 @@ def scrape_data(url, unique_set):
             cleaned.append(clean)
 
     url['Manual-Fact-Sale Sheet'] = pdf
-    ability = []
-    for row in url['Manual-Fact-Sale Sheet']:
-        if row == 'x':
-            ability.append('FALSE')
-        else:
-            ability.append('TRUE')
+    
+    # qc = []
+    # for row in url['Manual-Fact-Sale Sheet']:
+    #     if row == 'x':
+    #         qc.append('FALSE')
+    #     else:
+    #         qc.append('TRUE')
 
     url['timestamp'] = timestamp
     url['scraped'] = cleaned
-    url['ability'] = ability
+    # url['QC'] = qc
 
-    url_ = url  # [url.ability != 'FALSE']
+    url_ = url[url.Status != 'x']
     url_ = url_.reset_index(drop=True)
 
     data = {}
@@ -152,7 +216,8 @@ def scrape_data(url, unique_set):
         product_type = row['Product_type']
         scraped = row['scraped']
         product = row['Product_Name']
-        url = row['URL']
+        status = row['Status']
+        u_rl = row['URL']
         pdf = row['Manual-Fact-Sale Sheet']
         timestamp = row['timestamp']
         clean_ws = cleanText(scraped)
@@ -163,8 +228,9 @@ def scrape_data(url, unique_set):
                 "Abbreviation": bank_abb,
                 "FI": bank_name,
                 "FI_type": type_,
+                "Status" : status,
                 "product_type": product_type,
-                "URL": url,
+                "URL": u_rl,
                 "PDF": pdf,
                 "timestamp": timestamp,
                 "keywords": []
@@ -198,6 +264,7 @@ def scrape_data(url, unique_set):
                 "Product_type": details["product_type"],
                 "URL": details["URL"],
                 "PDF": details["PDF"],
+                "Status" : details["Status"],
                 "timestamp": details["timestamp"],
                 "Keyword_Set": keyword_info["keyword_set"],
                 "keyword": keyword_info["keyword"],
