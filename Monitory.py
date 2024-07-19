@@ -26,8 +26,65 @@ hide_st_style = """
 st.markdown(hide_st_style, unsafe_allow_html = True)
 
 #### -------------Tableau connect------------ ####
-
 ## Disabled Tableau Function (SSLErrors)
+
+tableau_token_name = st.secrets["tableau"]["token_name"]
+tableau_token_value = st.secrets["tableau"]["token_value"]
+tableau_server_url = st.secrets["tableau"]["server_url"]
+site_id = st.secrets["tableau"]["site_id"]
+
+def tableau_auth():
+    url = f"{tableau_server_url}/api/3.8/auth/signin"
+    payload = {
+        "credentials": {
+            "personalAccessTokenName": tableau_token_name,
+            "personalAccessTokenSecret": tableau_token_value,
+            "site": {
+                "contentUrl": site_id
+            }
+        }
+    }
+    response = requests.post(url, json=payload)
+    if response.status_code != 200:
+        raise Exception(f"Tableau authentication failed: {response.content}")
+    return response.json()['credentials']['token']
+
+# Publish data function
+def publish_data_to_tableau(session_token, dataframe, datasource_name):
+    url = f"{tableau_server_url}/api/3.8/sites/{site_id}/datasources"
+    headers = {
+        "X-Tableau-Auth": session_token
+    }
+
+    # Save dataframe to CSV
+    dataframe.to_csv("data.csv", index=False)
+
+    # Prepare the multipart request
+    payload = {
+        "datasource": {
+            "name": datasource_name,
+            "project": {
+                "id": site_id
+            }
+        }
+    }
+    files = {
+        'request_payload': (None, json.dumps(payload), 'application/json'),
+        'tableau_datasource': ('data.csv', open('data.csv', 'rb'), 'application/octet-stream')
+    }
+    
+    response = requests.post(url, headers=headers, files=files)
+    if response.status_code != 201:
+        raise Exception(f"Failed to publish data to Tableau: {response.content}")
+    return response.json()
+
+# Sign out function
+def tableau_signout(session_token):
+    url = f"{tableau_server_url}/api/3.8/auth/signout"
+    headers = {
+        "X-Tableau-Auth": session_token
+    }
+    requests.post(url, headers=headers)
 
 #### -----------function definition---------- ####
 
@@ -138,9 +195,9 @@ def scrape_data(url, unique_set):
 
     url['timestamp'] = timestamp
     url['scraped'] = cleaned
-    # url['ability'] = ability
+    url['ability'] = ability
 
-    url_ = url[url.Status != 'x']
+    url_ = url  # [url.ability != 'FALSE']
     url_ = url_.reset_index(drop=True)
 
     data = {}
@@ -152,7 +209,6 @@ def scrape_data(url, unique_set):
         product_type = row['Product_type']
         scraped = row['scraped']
         product = row['Product_Name']
-        status = row['Status']
         url = row['URL']
         pdf = row['Manual-Fact-Sale Sheet']
         timestamp = row['timestamp']
@@ -164,7 +220,6 @@ def scrape_data(url, unique_set):
                 "Abbreviation": bank_abb,
                 "FI": bank_name,
                 "FI_type": type_,
-                "Status" : status,
                 "product_type": product_type,
                 "URL": url,
                 "PDF": pdf,
@@ -200,7 +255,6 @@ def scrape_data(url, unique_set):
                 "Product_type": details["product_type"],
                 "URL": details["URL"],
                 "PDF": details["PDF"],
-                "Status" : details["Status"],
                 "timestamp": details["timestamp"],
                 "Keyword_Set": keyword_info["keyword_set"],
                 "keyword": keyword_info["keyword"],
