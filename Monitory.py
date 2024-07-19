@@ -102,7 +102,7 @@ def get_pdf(url):
         pdf_urls = []
         for link in links:
             href = link.get('href')
-            if href and href.lower().endswith(('.pdf')): # <- add more type of file available here
+            if href and href.lower().endswith(('.pdf', '.pdf.aspx')): # <- add more type of file available here
                 download_url = urljoin(url, href)
                 pdf_urls.append(download_url)
         return pdf_urls
