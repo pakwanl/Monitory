@@ -9,82 +9,25 @@ import time
 from urllib.parse import urljoin
 import datetime
 import pytz
-import json
-import xlsxwriter
-from io import BytesIO
-from streamlit_option_menu import option_menu
+import subprocess
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 
 #### ----------------setting----------------- ####
 
-hide_st_style = """
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    </style>
-    """
-st.markdown(hide_st_style, unsafe_allow_html = True)
-
-#### -------------Tableau connect------------ ####
-## Disabled Tableau Function (SSLErrors)
-
-tableau_token_name = st.secrets["tableau"]["token_name"]
-tableau_token_value = st.secrets["tableau"]["token_value"]
-tableau_server_url = st.secrets["tableau"]["server_url"]
-site_id = st.secrets["tableau"]["site_id"]
-
-def tableau_auth():
-    url = f"{tableau_server_url}/api/3.8/auth/signin"
-    payload = {
-        "credentials": {
-            "personalAccessTokenName": tableau_token_name,
-            "personalAccessTokenSecret": tableau_token_value,
-            "site": {
-                "contentUrl": site_id
-            }
-        }
-    }
-    response = requests.post(url, json=payload)
-    if response.status_code != 200:
-        raise Exception(f"Tableau authentication failed: {response.content}")
-    return response.json()['credentials']['token']
-
-# Publish data function
-def publish_data_to_tableau(session_token, dataframe, datasource_name):
-    url = f"{tableau_server_url}/api/3.8/sites/{site_id}/datasources"
-    headers = {
-        "X-Tableau-Auth": session_token
-    }
-
-    # Save dataframe to CSV
-    dataframe.to_csv("data.csv", index=False)
-
-    # Prepare the multipart request
-    payload = {
-        "datasource": {
-            "name": datasource_name,
-            "project": {
-                "id": site_id
-            }
-        }
-    }
-    files = {
-        'request_payload': (None, json.dumps(payload), 'application/json'),
-        'tableau_datasource': ('data.csv', open('data.csv', 'rb'), 'application/octet-stream')
-    }
-    
-    response = requests.post(url, headers=headers, files=files)
-    if response.status_code != 201:
-        raise Exception(f"Failed to publish data to Tableau: {response.content}")
-    return response.json()
-
-# Sign out function
-def tableau_signout(session_token):
-    url = f"{tableau_server_url}/api/3.8/auth/signout"
-    headers = {
-        "X-Tableau-Auth": session_token
-    }
-    requests.post(url, headers=headers)
+# hide_st_style = """
+#     <style>
+#     #MainMenu {visibility: hidden;}
+#     footer {visibility: hidden;}
+#     header {visibility: hidden;}
+#     </style>
+#     """
+# st.markdown(hide_st_style, unsafe_allow_html = True)
 
 #### -----------function definition---------- ####
 
