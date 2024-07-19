@@ -200,7 +200,7 @@ def scrape_data(url, unique_set):
                 "Product_type": details["product_type"],
                 "URL": details["URL"],
                 "PDF": details["PDF"],
-                "Status" : details["Status"]
+                "Status" : details["Status"],
                 "timestamp": details["timestamp"],
                 "Keyword_Set": keyword_info["keyword_set"],
                 "keyword": keyword_info["keyword"],
