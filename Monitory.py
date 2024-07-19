@@ -107,9 +107,9 @@ def get_pdf(url):
                 pdf_urls.append(download_url)
         return pdf_urls
     except requests.exceptions.RequestException as e:
-        return []
+        return [f"{e}"]
     except requests.exceptions.SSLError as e:
-        return []
+        return [f"{e}"]
 
 def extract_matches(text, patterns):
     matches = {}
