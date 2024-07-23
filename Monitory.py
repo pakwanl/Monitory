@@ -9,6 +9,8 @@ import time
 from urllib.parse import urljoin
 import datetime
 import pytz
+import xlsxwriter
+from io import BytesIO
 import subprocess
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -308,3 +310,17 @@ if 'scraped_data' in st.session_state:
     
     st.write(":sparkler: Filtered Information :sparkler:")
     st.write(filtered_data)
+    
+output = BytesIO()
+workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+worksheet = workbook.add_worksheet()
+
+worksheet.write(filtered_data)
+workbook.close()
+
+st.download_button(
+    label="Download Excel workbook",
+    data=output.getvalue(),
+    file_name=f"Monitory_output_{current_datetime}.xlsx",
+    mime="application/vnd.ms-excel"
+)
