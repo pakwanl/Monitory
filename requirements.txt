@@ -8,3 +8,4 @@ xlsxwriter
 pytz
 selenium
 webdriver-manager
+io
