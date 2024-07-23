@@ -100,7 +100,7 @@ def to_excel(df):
     df.to_excel(writer, index=False, sheet_name='Output')
     workbook = writer.book
     worksheet = writer.sheets['Output']  
-    writer.save()
+    writer.close()
     processed_data = output.getvalue()
     return processed_data
     
