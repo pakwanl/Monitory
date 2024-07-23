@@ -311,7 +311,7 @@ if 'scraped_data' in st.session_state:
     st.write(":sparkler: Filtered Information :sparkler:")
     st.write(filtered_data)
     
-    buffer = io.BytesIO()
+    buffer = BytesIO()
     output = pd.DataFrame(filtered_data)
     
     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
