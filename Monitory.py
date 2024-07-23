@@ -311,15 +311,14 @@ if 'scraped_data' in st.session_state:
     st.write(":sparkler: Filtered Information :sparkler:")
     st.write(filtered_data)
     
-    output = BytesIO()
-    workbook = xlsxwriter.Workbook(output, {'in_memory': True})
-    worksheet = workbook.add_worksheet()
+    buffer = io.BytesIO()
+    output = pd.DataFrame(filtered_data)
     
-    worksheet.write(filtered_data)
-    workbook.close()
-    
-    st.download_button(
-        label="Download Excel workbook",
-        data=output.getvalue(),
-        file_name=f"Monitory_output_{current_datetime}.xlsx",
-        mime="application/vnd.ms-excel")
+    with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+        output.to_excel(writer)
+        writer.save()
+        st.download_button(
+            label="Download Excel worksheets",
+            data=buffer,
+            file_name=f"output_{current_datetime}.xlsx",
+            mime="application/vnd.ms-excel"
