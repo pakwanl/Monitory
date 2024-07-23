@@ -321,4 +321,4 @@ if 'scraped_data' in st.session_state:
             label="Download Excel worksheets",
             data=buffer,
             file_name=f"output_{current_datetime}.xlsx",
-            mime="application/vnd.ms-excel"
+            mime="application/vnd.ms-excel")
