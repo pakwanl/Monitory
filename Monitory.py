@@ -94,7 +94,16 @@ def get_text_java(url):
     finally:
         if 'driver' in locals():
             driver.quit()
-
+def to_excel(df):
+    output = BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    df.to_excel(writer, index=False, sheet_name='Output')
+    workbook = writer.book
+    worksheet = writer.sheets['Output']  
+    writer.save()
+    processed_data = output.getvalue()
+    return processed_data
+    
 def get_pdf(url):
     try:
         response = requests.get(url)
@@ -310,15 +319,8 @@ if 'scraped_data' in st.session_state:
     
     st.write(":sparkler: Filtered Information :sparkler:")
     st.write(filtered_data)
-    
-    buffer = BytesIO()
-    output = pd.DataFrame(filtered_data)
-    
-    with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-        output.to_excel(writer)
-        writer.save()
-        st.download_button(
-            label="Download Excel worksheets",
-            data=buffer,
-            file_name=f"output_{current_datetime}.xlsx",
-            mime="application/vnd.ms-excel")
+    df_xlsx = pd.DataFrame(scraped_data)
+    xlsx = to_excel(df_xlsx)
+    st.download_button(label='📥 Download output',
+                                    data=xlsx ,
+                                    file_name= f"output_{current_datetime}.xlsx")
