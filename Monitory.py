@@ -316,7 +316,8 @@ if 'scraped_data' in st.session_state:
         (scraped_data["Product_type"].isin(product_type_filter))&
         (scraped_data["Product"].isin(product_filter))
     ]
-    
+
+    current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d")
     st.write(":sparkler: Filtered Information :sparkler:")
     st.write(filtered_data)
     df_xlsx = pd.DataFrame(scraped_data)
