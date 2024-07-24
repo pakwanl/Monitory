@@ -1,8 +1,6 @@
 streamlit
 streamlit-option-menu
 beautifulsoup4
-
-openpyxl
 xlsxwriter
 pytz
 selenium
