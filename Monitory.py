@@ -55,25 +55,6 @@ def get_text_java(url):
     options = Options()
     options.add_argument('--headless')
     try:
-        result = subprocess.run(["pip", "show", "webdriver-manager"], capture_output=True, text=True)
-        if "webdriver-manager" not in result.stdout:
-            subprocess.run(["pip", "install", "webdriver-manager"])
-        else:
-            current_version = result.stdout.split("\n")[1].split(": ")[-1]
-            if current_version < "0.8.3":
-                subprocess.run(["pip", "install", "--upgrade", "webdriver-manager"])
-    except subprocess.CalledProcessError as e:
-        print(f"Error checking/upgrading webdriver_manager: {e}")
-    try:
-        result = subprocess.run(["which", "google-chrome"], capture_output=True, text=True)
-        if not result.stdout.strip():
-            print("Chrome not found. Please install Chrome or set the appropriate environment variable.")
-            return ""
-    except subprocess.CalledProcessError:
-        print("Error checking Chrome installation. Please ensure Chrome is installed.")
-        return ""
-
-    try:
         driver_path = ChromeDriverManager().install()
         driver = webdriver.Chrome(service=Service(driver_path), options=options)
         driver.get(url)
@@ -145,9 +126,9 @@ else:
 #### --------uploaded data preparation-------- ####
 
 if uploaded_file is not None:
-    unique_set = patterns['topic'].unique()
+    unique_set = patterns['set'].unique()
     for set_name in unique_set:
-        pattern_dict = dict(zip(patterns[patterns['topic'] == set_name]['topic'], patterns[patterns['topic'] == set_name]['pattern']))
+        pattern_dict = dict(zip(patterns[patterns['set'] == set_name]['topic'], patterns[patterns['set'] == set_name]['pattern']))
         globals()[set_name] = {key: fr"{value}" for key, value in pattern_dict.items()}
         
     url = url[url.Status == 'keep']
