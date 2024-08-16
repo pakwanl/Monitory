@@ -153,7 +153,7 @@ def scrape_data(url, unique_set):
         max_sleep = 5
         sleep_time = random.uniform(min_sleep, max_sleep)
         time.sleep(sleep_time)
-        if url.loc[idx, 'scrapable'] == 'Java':
+        if url.loc[idx, 'Type'] == 'Java':
             scrape = get_text_java(rl)
             if scrape:
                 ws.append([scrape])
