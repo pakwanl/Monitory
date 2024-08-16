@@ -4,6 +4,7 @@ import streamlit as st
 from bs4 import BeautifulSoup
 import requests
 import re
+import random
 import pandas as pd
 import time
 from urllib.parse import urljoin
@@ -176,7 +177,10 @@ def scrape_data(url, unique_set):
         current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d %H:%M:%S")
         pdf_files = get_pdf(rl)
         pdf.append('\n\n- '.join(pdf_files) if pdf_files else 'x')
-        
+        min_sleep = 1
+        max_sleep = 5
+        sleep_time = random.uniform(min_sleep, max_sleep)
+        time.sleep(sleep_time)
         if url.loc[idx, 'scrapable'] == 'Java':
             scrape = get_text_java(rl)
             if scrape:
@@ -184,7 +188,7 @@ def scrape_data(url, unique_set):
             else:
                 ws.append([""])
             timestamp.append(current_datetime)
-            time.sleep(5)
+            time.sleep(sleep_time)
             progress_bar.progress(int((idx + 1) * progress_step))
         else:
             scrape = get_text_html(rl)
@@ -193,7 +197,7 @@ def scrape_data(url, unique_set):
             else:
                 ws.append([""])
             timestamp.append(current_datetime)
-            time.sleep(5)
+            time.sleep(sleep_time)
             progress_bar.progress(int((idx + 1) * progress_step))
             
     cleaned = []
