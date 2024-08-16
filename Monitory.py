@@ -117,7 +117,7 @@ if uploaded_file is not None:
         patterns = pd.DataFrame(patterns)
 
         st.write("Product", url)
-        st.write("Keyword pattern", patterns)
+        # st.write("Keyword pattern", patterns)
     except Exception as e:
         st.error(f"An error occurred while reading the file: {e}")
 else:
