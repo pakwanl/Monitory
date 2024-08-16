@@ -145,9 +145,9 @@ else:
 #### --------uploaded data preparation-------- ####
 
 if uploaded_file is not None:
-    unique_set = patterns['set'].unique()
+    unique_set = patterns['topic'].unique()
     for set_name in unique_set:
-        pattern_dict = dict(zip(patterns[patterns['set'] == set_name]['mc'], patterns[patterns['set'] == set_name]['pattern']))
+        pattern_dict = dict(zip(patterns[patterns['topic'] == set_name]['topic'], patterns[patterns['topic'] == set_name]['pattern']))
         globals()[set_name] = {key: fr"{value}" for key, value in pattern_dict.items()}
         
     url = url[url.Status == 'keep']
