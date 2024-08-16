@@ -25,16 +25,12 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 hide_st_style = """
     <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
+    # MainMenu {visibility: hidden;}
+    # footer {visibility: hidden;}
     header {visibility: hidden;}
     </style> 
     """
 st.markdown(hide_st_style, unsafe_allow_html = True)
-
-#### -------------Tableau connect------------ ####
-
-    ## Disabled Tableau Function (SSLErrors)
 
 #### -----------function definition---------- ####
 
@@ -58,22 +54,16 @@ def get_text_html(url):
 def get_text_java(url):
     options = Options()
     options.add_argument('--headless')
-
-    # Ensure webdriver_manager is installed and up to date
     try:
         result = subprocess.run(["pip", "show", "webdriver-manager"], capture_output=True, text=True)
         if "webdriver-manager" not in result.stdout:
-            print("Installing webdriver-manager...")
             subprocess.run(["pip", "install", "webdriver-manager"])
         else:
             current_version = result.stdout.split("\n")[1].split(": ")[-1]
             if current_version < "0.8.3":
-                print(f"Upgrading webdriver_manager (current: {current_version})...")
                 subprocess.run(["pip", "install", "--upgrade", "webdriver-manager"])
     except subprocess.CalledProcessError as e:
         print(f"Error checking/upgrading webdriver_manager: {e}")
-
-    # Ensure Chrome is installed
     try:
         result = subprocess.run(["which", "google-chrome"], capture_output=True, text=True)
         if not result.stdout.strip():
@@ -95,6 +85,7 @@ def get_text_java(url):
     finally:
         if 'driver' in locals():
             driver.quit()
+            
 def to_excel(df):
     output = BytesIO()
     writer = pd.ExcelWriter(output, engine='xlsxwriter')
