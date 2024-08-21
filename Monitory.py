@@ -126,7 +126,7 @@ if uploaded_file is not None:
 
 #### --------------web scraping-------------- ####
 
-def scrape_data(url, unique_set):
+def scrape_data(url, unique_set): # there's a problem here with error code 127; probably too much sample
     ws = []
     timestamp = []
     pdf = []
