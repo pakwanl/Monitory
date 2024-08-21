@@ -53,19 +53,18 @@ def get_text_html(url):
 
 def get_text_java(url):
     options = Options()
-    options.add_argument('--headless')
-    try:
-        driver_path = ChromeDriverManager().install()
-        driver = webdriver.Chrome(service=Service(driver_path), options=options)
-        driver.get(url)
-        page_source = driver.page_source
-        soup = BeautifulSoup(page_source, 'html.parser')
-        return soup.get_text()
-    except Exception as e:
-        return f"An error occurred: {e}"
-    finally:
-        if 'driver' in locals():
-            driver.quit()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    driver = webdriver.Chrome(options=options)
+    
+    driver.get(url)
+    page_text = driver.find_element(By.TAG_NAME, "body").text
+    soup = BeautifulSoup(page_text, 'html.parser')
+    mu, sigma = 1, 0.1 # mean and standard deviation
+    s = np.random.normal(mu, sigma, 1000)
+    time.sleep(random.choice(s))
+    driver.quit()
+    return soup.get_text()
             
 def to_excel(df):
     output = BytesIO()
