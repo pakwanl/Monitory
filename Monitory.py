@@ -65,6 +65,7 @@ def get_text_java(url):
         s = np.random.normal(mu, sigma, 1000)
         time.sleep(random.choice(s))
         driver.quit()
+    finally:
         return soup.get_text()
             
 def to_excel(df):
