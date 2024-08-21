@@ -56,15 +56,16 @@ def get_text_java(url):
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     driver = webdriver.Chrome(options=options)
-    
-    driver.get(url)
-    page_text = driver.find_element(By.TAG_NAME, "body").text
-    soup = BeautifulSoup(page_text, 'html.parser')
-    mu, sigma = 1, 0.1 # mean and standard deviation
-    s = np.random.normal(mu, sigma, 1000)
-    time.sleep(random.choice(s))
-    driver.quit()
-    return soup.get_text()
+
+    try:
+        driver.get(url)
+        page_text = driver.find_element(By.TAG_NAME, "body").text
+        soup = BeautifulSoup(page_text, 'html.parser')
+        mu, sigma = 1, 0.1 # mean and standard deviation
+        s = np.random.normal(mu, sigma, 1000)
+        time.sleep(random.choice(s))
+        driver.quit()
+        return soup.get_text()
             
 def to_excel(df):
     output = BytesIO()
