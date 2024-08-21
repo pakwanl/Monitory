@@ -52,21 +52,17 @@ def get_text_html(url):
     except requests.exceptions.SSLError as e:
         return f"SSL error for URL '{url}': \n{e}"
 
-def get_text_java(url):
+def get_text(url):
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
-    try:
-        driver = webdriver.Chrome(options=options)
-        driver.get(url)
-        page_text = driver.find_element(By.TAG_NAME, "body").text
-        soup = BeautifulSoup(page_text, 'html.parser')
-        mu, sigma = 1, 0.1 # mean and standard deviation
-        s = np.random.normal(mu, sigma, 1000)
-        time.sleep(random.choice(s))
-        driver.quit()
-    finally:
-        return soup.get_text()
+    driver = webdriver.Chrome(options=options)
+    driver.get(url)
+    time.sleep(random.uniform(1,5))
+    page_text = driver.find_element(By.TAG_NAME, "body").text
+    soup = BeautifulSoup(page_text, 'html.parser')
+    driver.quit()
+    return soup.get_text()
             
 def to_excel(df):
     output = BytesIO()
@@ -153,26 +149,16 @@ def scrape_data(url, unique_set):
 
         mu, sigma = 1, 0.1 # mean and standard deviation
         s = np.random.normal(mu, sigma, 1000)
-        time.sleep(random.choice(s))
-    
-        if url.loc[idx, 'Type'] == 'Java':
-            scrape = get_text_java(rl)
-            if scrape:
-                ws.append([scrape])
-            else:
-                ws.append([""])
-            timestamp.append(current_datetime)
-            time.sleep(random.choice(s))
-            progress_bar.progress(int((idx + 1) * progress_step))
+        
+        scrape = get_text(rl)
+        if scrape:
+            ws.append([scrape])
         else:
-            scrape = get_text_html(rl)
-            if scrape:
-                ws.append([scrape])
-            else:
-                ws.append([""])
-            timestamp.append(current_datetime)
-            time.sleep(random.choice(s))
-            progress_bar.progress(int((idx + 1) * progress_step))
+            ws.append([""])
+            
+        timestamp.append(current_datetime)
+        time.sleep(random.choice(s))
+        progress_bar.progress(int((idx + 1) * progress_step))
             
     cleaned = []
     for web in ws:
