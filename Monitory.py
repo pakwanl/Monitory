@@ -195,11 +195,11 @@ def scrape_data(url, unique_set):
         group = row['Group']
         bank_abb = row['Bank_abb']
         bank_name = row['Bank_name']
-        type_ = row['type']
+        fi_type = row['FI_type']
         product_type = row['Product_type']
         scraped = row['scraped']
         product = row['Product_Name']
-        status = row['Status']
+        type = row['Type']
         u_rl = row['URL']
         pdf = row['Manual-Fact-Sale Sheet']
         timestamp = row['timestamp']
@@ -210,8 +210,8 @@ def scrape_data(url, unique_set):
                 "Group": group,
                 "Abbreviation": bank_abb,
                 "FI": bank_name,
-                "FI_type": type_,
-                "Status" : status,
+                "FI_type": fi_type,
+                "Type" : type,
                 "product_type": product_type,
                 "URL": u_rl,
                 "PDF": pdf,
@@ -247,7 +247,7 @@ def scrape_data(url, unique_set):
                 "Product_type": details["product_type"],
                 "URL": details["URL"],
                 "PDF": details["PDF"],
-                "Status" : details["Status"],
+                "Type" : details["Type"],
                 "timestamp": details["timestamp"],
                 "Keyword_Set": keyword_info["keyword_set"],
                 "keyword": keyword_info["keyword"],
