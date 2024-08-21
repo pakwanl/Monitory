@@ -41,16 +41,9 @@ def cleanText(text):
     newText = ' '.join(newText.split())  # Keep only one white space
     return newText
 
-def get_text_html(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'html.parser')
-        return soup.get_text()
-    except requests.exceptions.RequestException as e:
-        return f"Request error for URL '{url}': \n{e}"
-    except requests.exceptions.SSLError as e:
-        return f"SSL error for URL '{url}': \n{e}"
+def summ(scraped):
+    pass
+
 
 def get_text(url):
     options = Options()
