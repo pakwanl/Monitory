@@ -163,7 +163,7 @@ def scrape_data(url, unique_set):
             else:
                 ws.append([""])
             timestamp.append(current_datetime)
-            time.sleep(sleep_time)
+            time.sleep(random.choice(s))
             progress_bar.progress(int((idx + 1) * progress_step))
         else:
             scrape = get_text_html(rl)
@@ -172,7 +172,7 @@ def scrape_data(url, unique_set):
             else:
                 ws.append([""])
             timestamp.append(current_datetime)
-            time.sleep(sleep_time)
+            time.sleep(random.choice(s))
             progress_bar.progress(int((idx + 1) * progress_step))
             
     cleaned = []
