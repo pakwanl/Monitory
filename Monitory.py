@@ -148,10 +148,11 @@ def scrape_data(url, unique_set):
         current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d %H:%M:%S")
         pdf_files = get_pdf(rl)
         pdf.append('\n\n- '.join(pdf_files) if pdf_files else 'x')
-        min_sleep = 1
-        max_sleep = 5
-        sleep_time = random.uniform(min_sleep, max_sleep)
-        time.sleep(sleep_time)
+
+        mu, sigma = 1, 0.1 # mean and standard deviation
+        s = np.random.normal(mu, sigma, 1000)
+        time.sleep(random.choice(s))
+    
         if url.loc[idx, 'Type'] == 'Java':
             scrape = get_text_java(rl)
             if scrape:
@@ -178,13 +179,6 @@ def scrape_data(url, unique_set):
             cleaned.append(clean)
 
     url['Manual-Fact-Sale Sheet'] = pdf
-    
-    # qc = []
-    # for row in url['Manual-Fact-Sale Sheet']:
-    #     if row == 'x':
-    #         qc.append('FALSE')
-    #     else:
-    #         qc.append('TRUE')
 
     url['timestamp'] = timestamp
     url['scraped'] = cleaned
