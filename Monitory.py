@@ -4,6 +4,7 @@ import streamlit as st
 from bs4 import BeautifulSoup
 import requests
 import re
+import numpy as np
 import random
 import pandas as pd
 import time
