@@ -21,6 +21,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
 
 #### ----------------setting----------------- ####
 
@@ -41,21 +42,41 @@ def cleanText(text):
     newText = ' '.join(newText.split())  # Keep only one white space
     return newText
 
-def summ(scraped):
-    pass
-
-
 def get_text(url):
+    all_text = []
+    
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     driver = webdriver.Chrome(options=options)
-    driver.get(url)
-    time.sleep(random.uniform(1,5))
-    page_text = driver.find_element(By.TAG_NAME, "body").text
-    soup = BeautifulSoup(page_text, 'html.parser')
-    driver.quit()
-    return soup.get_text()
+    
+    # driver.get(url)
+    # time.sleep(random.uniform(1,5))
+    # page_text = driver.find_element(By.TAG_NAME, "body").text
+    # soup = BeautifulSoup(page_text, 'html.parser')
+    # driver.quit()
+    # return soup.get_text()
+    
+    driver.set_page_load_timeout(30)
+  
+  try:
+      driver.get(url)
+      while True:  # Retry loop
+          try:
+              text_elements = driver.find_elements(By.TAG_NAME, 'p')
+              for element in text_elements:
+                  text = element.text
+                  soup = BeautifulSoup(text, 'html.parser')
+                  all_text.append(soup.get_text())
+              break  # Exit the loop if successful
+          except StaleElementReferenceException:
+              time.sleep(1)  # Wait a bit before retrying
+      return ' '.join(all_text)  # Return the scraped text
+
+  except TimeoutException:
+      return "Timed out session, skip to the next product..."
+  finally:
+      driver.quit()
             
 def to_excel(df):
     output = BytesIO()
