@@ -132,7 +132,7 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"An error occurred while reading the file: {e}")
 else:
-    st.warning(":receipt: uploading file to continue!")
+    st.warning(":receipt: fyi, It works best with **less** than 10 url sample!")
 
 #### --------uploaded data preparation-------- ####
 
@@ -141,13 +141,11 @@ if uploaded_file is not None:
     for set_name in unique_set:
         pattern_dict = dict(zip(patterns[patterns['set'] == set_name]['topic'], patterns[patterns['set'] == set_name]['pattern']))
         globals()[set_name] = {key: fr"{value}" for key, value in pattern_dict.items()}
-        
-    url = url[url.Status == 'keep']
     url = url.reset_index(drop=True)
 
 #### --------------web scraping-------------- ####
 
-def scrape_data(url, unique_set): # there's a problem here with error code 127; probably too much sample
+def scrape_data(url, unique_set): # there's a problem here with error code 127; probably too much sample ### fix at input amount (Aug,24)
     ws = []
     timestamp = []
     pdf = []
