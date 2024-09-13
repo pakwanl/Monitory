@@ -46,7 +46,6 @@ def cleanText(text):
     newText = ' '.join(newText.split())  # Keep only one white space
     return newText
     
-@st.experimental_singleton
 def get_driver():
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
