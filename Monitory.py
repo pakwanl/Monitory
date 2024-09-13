@@ -260,7 +260,7 @@ def scraping(df):
   progress_bar = st.progress(0)
   total_urls = len(df)
   progress_step = 100 / total_urls if total_urls > 0 else 0
-  
+  idx = 0
   for url in filtered_bank['URL']:
     result = scrap(url)
     current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d %H:%M:%S")
