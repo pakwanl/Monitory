@@ -283,8 +283,8 @@ def scraping(df):
   focus_df['relevant'] = focus_df['relevant'].apply(cleanText)
   focus_df['pdf'] = pdf
   
-  API = st.secrets["API"]
-  genai.configure(api_key='AIzaSyA-b97PeBiNGWVOJXanAddvrMUMtp_Hx2Q')
+  api_key = st.secrets["API"]
+  genai.configure(api_key=api_key)
   model = genai.GenerativeModel('gemini-1.5-flash')
   @retry(wait=wait_exponential(multiplier=1, min=1, max=10), stop=stop_after_attempt(3), reraise=True)
     apply_summary_relevant(focus_df, model)
