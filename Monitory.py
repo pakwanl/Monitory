@@ -21,6 +21,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.core.os_manager import ChromeType
 
 from tenacity import retry, wait_exponential, stop_after_attempt, RetryError
 import pathlib
@@ -51,7 +52,8 @@ def get_driver():
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
-    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options = chrome_options)
+    
+    return webdriver.Chrome(service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install(), options = chrome_options)
 
 def scrap(url):
     all_text = []
