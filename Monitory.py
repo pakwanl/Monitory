@@ -174,7 +174,6 @@ def generate_content_with_retry(model, text, pdf_urls):
       raise
     
 def apply_summary_relevant(focus_df, model):
-    @retry(wait=wait_exponential(multiplier=1, min=1, max=10), stop=stop_after_attempt(3), reraise=True)
     summaries = []
     for idx, row in focus_df.iterrows():
         text = row['relevant']
@@ -197,7 +196,6 @@ def divide_text_into_chunks(text, chunk_size=8000):
     return [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
 
 def apply_summary_all(focus_df, model):
-    @retry(wait=wait_exponential(multiplier=1, min=1, max=10), stop=stop_after_attempt(3), reraise=True)
     summaries = []
     for idx, row in focus_df.iterrows():
         text = row['scraped']
@@ -290,15 +288,16 @@ def scraping(df):
   model = genai.GenerativeModel('gemini-1.5-flash')
   apply_summary_relevant(focus_df, model)
   apply_summary_all(focus_df, model)
-
   return focus_df
 
+# @retry(wait=wait_exponential(multiplier=1, min=1, max=10), stop=stop_after_attempt(3), reraise=True)
 
 if uploaded_file is not None and st.button("Start Scraping!"):
     scraped_data = scraping(filtered_bank)
     st.session_state['scraped_data'] = scraped_data
 
 #### -----------filter and display------------ ####
+
 if 'scraped_data' in st.session_state:
     
     scraped_data = st.session_state['scraped_data']
