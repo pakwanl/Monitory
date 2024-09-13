@@ -287,8 +287,8 @@ def scraping(df):
   genai.configure(api_key=api_key)
   model = genai.GenerativeModel('gemini-1.5-flash')
   @retry(wait=wait_exponential(multiplier=1, min=1, max=10), stop=stop_after_attempt(3), reraise=True)
-    apply_summary_relevant(focus_df, model)
-    apply_summary_all(focus_df, model)
+  apply_summary_relevant(focus_df, model)
+  apply_summary_all(focus_df, model)
 
   return focus_df
 
