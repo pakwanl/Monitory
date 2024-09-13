@@ -268,7 +268,7 @@ def scraping(df):
       scrap_text, _pdf, _relevant = result
       scraped.append(scrap_text)
       pdf.append(_pdf)
-      relevant.append(_ktb)
+      relevant.append(_relevant)
       timestamp.append(current_datetime)
     else:
       scraped.append(f"Unexpected result from scrap function: {result}")
