@@ -280,7 +280,7 @@ def scraping(df):
     
   focus_df = filtered_bank.copy()
   focus_df['timestamp'] = timestamp
-  focus_df['scraped'] = scraped_dup
+  focus_df['scraped'] = scraped
   focus_df['scraped'] = focus_df['scraped'].apply(cleanText)
   focus_df['relevant'] = relevant
   focus_df['relevant'] = focus_df['relevant'].apply(cleanText)
