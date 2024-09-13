@@ -45,6 +45,10 @@ def cleanText(text):
     newText = text.translate(str.maketrans('', '', newPunc))  # Remove unnecessary punctuation
     newText = ' '.join(newText.split())  # Keep only one white space
     return newText
+    
+@st.experimental_singleton
+def get_driver():
+    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 def scrap(url):
     all_text = []
@@ -57,7 +61,7 @@ def scrap(url):
     chrome_options.add_argument('--disable-dev-shm-usage')
 
     service = Service('/usr/local/bin/chromedriver')
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = driver = get_driver()
     driver.set_page_load_timeout(30)
 
     try:
