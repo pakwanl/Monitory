@@ -313,8 +313,7 @@ if 'scraped_data' in st.session_state:
     filtered_data = scraped_data[
         (scraped_data["Group"].isin(group_filter)) &
         (scraped_data["FI_name"].isin(fi_filter)) &
-        (scraped_data["Product_type"].isin(product_type_filter))&
-    ]
+        (scraped_data["Product_type"].isin(product_type_filter))]
 
     current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d")
     st.write(":sparkler: Filtered Information :sparkler:")
