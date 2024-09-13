@@ -245,7 +245,7 @@ else:
 #### --------uploaded data preparation-------- ####
 if uploaded_file is not None:
   bank_filter = st.multiselect("Select Group", options=df["Group"].unique(), default=df["Group"].unique())
-  filtered_bank = df[df["Group"].isin(group_filter)]
+  filtered_bank = df[df["Group"].isin(bank_filter)]
   
 #### --------------web scraping-------------- ####
 def scraping(df):
