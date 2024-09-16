@@ -56,7 +56,7 @@ def get_driver():
     
     return webdriver.Chrome(service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()), options = chrome_options)
 
-def scrap(url):
+def scrap(url,patterns):
     all_text = []
     pdf_urls = []
     relevant_text = []
@@ -120,6 +120,8 @@ def scrap(url):
 
         for element in text_elements:
             text = element.get_text(strip=True)
+            if is_relevant(text,patterns):
+                relevant_text.append
             all_text.append(text)
 
         for a_tag in soup.find_all('a', href=True):
@@ -134,7 +136,7 @@ def scrap(url):
         pdf_urls.append(f"Error occurred while making a request: {e}")
         return "Error during requests, skip to the next product..."
 
-    return ' '.join(all_text), '\n- '.join(pdf_urls)
+    return ' '.join(all_text), '\n- '.join(pdf_urls), ' '.join(relevant_text)
 
 def is_relevant(text, pattern):
    for description, patt in pattern.items():
@@ -251,7 +253,7 @@ if uploaded_file is not None:
   filtered_bank = df[df["Group"].isin(bank_filter)]
   
 #### --------------web scraping-------------- ####
-def scraping(df,patterns):
+def scraping(df,patterns=patterns):
   scraped = []
   pdf = []
   relevant = []
@@ -262,13 +264,12 @@ def scraping(df,patterns):
   progress_step = 100 / total_urls if total_urls > 0 else 0
   idx = 0
   for url in filtered_bank['URL']:
-    result = scrap(url)
+    result = scrap(url,patterns=patterns)
     current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d %H:%M:%S")
-    if isinstance(result, tuple) and len(result) == 2:
-      scrap_text, _pdf, = result
+    if isinstance(result, tuple) and len(result) == 3:
+      scrap_text, _pdf, _relevant = result
       scraped.append(scrap_text)
       pdf.append(_pdf)
-      _relevant = is_relevant(scrap_text,patterns) 
       relevant.append(_relevant)
       timestamp.append(current_datetime)
     else:
