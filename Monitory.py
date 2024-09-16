@@ -164,7 +164,7 @@ def generate_content_with_retry(model, text, pdf_urls):
        f"Additionally, if there is a link to a **PDF fact sheet** or **sale sheet** in {pdf_urls}, mention if the sheet was found. If no sheet is found, note: 'No fact/sale sheet was found during scraping, please proceed to the website manually.' "
       )
 
-      additional_instructions = None
+      additional_instructions = ""
       full_prompt = f"{base_prompt} {additional_instructions}; {text}"
       # Log the request
       response = model.generate_content(full_prompt)
