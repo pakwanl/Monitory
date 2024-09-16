@@ -290,15 +290,8 @@ def scraping(df):
   focus_df['relevant'] = relevant
   focus_df['relevant'] = focus_df['relevant'].apply(cleanText)
   focus_df['pdf'] = pdf
-  
-  api_key = st.secrets["API"]
-  genai.configure(api_key=api_key)
-  model = genai.GenerativeModel('gemini-1.5-flash')
-  apply_summary_relevant(focus_df, model)
-  apply_summary_all(focus_df, model)
+    
   return focus_df
-
-# @retry(wait=wait_exponential(multiplier=1, min=1, max=10), stop=stop_after_attempt(3), reraise=True)
 
 if uploaded_file is not None and st.button("Start Scraping!"):
     scraped_data = scraping(filtered_bank)
@@ -322,12 +315,26 @@ if 'scraped_data' in st.session_state:
         (scraped_data["Group"].isin(group_filter)) &
         (scraped_data["FI_name"].isin(fi_filter)) &
         (scraped_data["Product_type"].isin(product_type_filter))]
-
+    
     current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d")
     st.write(":sparkler: Filtered Information :sparkler:")
     st.write(filtered_data)
     df_xlsx = pd.DataFrame(scraped_data)
     xlsx = to_excel(df_xlsx, index = False)
-    st.download_button(label='📥 Download output',
+    st.download_button(label='📥 Download Scraped File',
                                     data=xlsx ,
                                     file_name= f"output_{current_datetime}.xlsx")
+    if st.button("Summary") :
+        api_key = st.secrets["API"]
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        apply_summary_relevant(focus_df, model)
+        apply_summary_all(focus_df, model)
+        df_xlsx = focus_df
+        xlsx = to_excel(df_xlsx, index = False)
+        st.download_button(label='📥 Download summarized File',
+                                        data=xlsx ,
+                                        file_name= f"output_{current_datetime}.xlsx")
+
+    
+
