@@ -166,7 +166,6 @@ def generate_content_with_retry(model, text, pdf_urls):
 
       additional_instructions = ""
       full_prompt = f"{base_prompt} {additional_instructions}; {text}"
-      # Log the request
       response = model.generate_content(full_prompt)
       return response.text
   except Exception as e:
@@ -183,7 +182,7 @@ def apply_summary_relevant(focus_df, model):
                 summaries.append(summary)
             else:
                 summaries.append("No relevant text found.")
-            time.sleep(1)  # avoid hitting API limits
+            time.sleep(3)  # avoid hitting API limits
         except RetryError as retry_err:
             summaries.append(f"Retries exhausted for index {idx}. Logging the issue and moving on: {retry_err}")
         except Exception as e:
@@ -207,7 +206,7 @@ def apply_summary_all(focus_df, model):
                 for chunk in text_chunks:
                     summary_chunk = generate_content_with_retry(model, chunk, pdf_urls)
                     summary_chunks.append(summary_chunk)
-                    time.sleep(1)
+                    time.sleep(3)
                 full_summary = ' '.join(summary_chunks)
                 summaries.append(full_summary)
             else:
@@ -229,24 +228,24 @@ def to_excel(df):
     return processed_data
 
 #### ---------------data import--------------- ####
-uploaded_file = st.file_uploader("Upload here :lightning_cloud:", type=None, accept_multiple_files=False)
+uploaded_file = st.file_uploader("Upload here :lightning_cloud:", type=["xlsx"], accept_multiple_files=False)
 if uploaded_file is not None:
     try:
         df = pd.read_excel(uploaded_file, sheet_name="product")
         df = pd.DataFrame(df)
         st.write("Product", df)
         
-        patterns = pd.read_excel(uploaded_file, sheet_name="pattern")
-        patterns = pd.DataFrame(patterns)
+        patt = pd.read_excel(uploaded_file, sheet_name="pattern")
+        patt = pd.DataFrame(patterns)
     except Exception as e:
         st.error(f"An error occurred while reading the file: {e}")
 else:
     st.warning(":receipt: fyi, It works best with **less** than 10 url samples!")
 
-unique_set = patterns['set'].unique()
+unique_set = patt['set'].unique()
 for set_name in unique_set:
-    pattern_dict = dict(zip(patterns[patterns['set'] == set_name]['topic'], patterns[patterns['set'] == set_name]['pattern']))
-    global() patterns = {key: fr"{value}" for key, value in pattern_dict.items()}
+    pattern_dict = dict(zip(patt[patt['set'] == set_name]['topic'], patt[patt['set'] == set_name]['pattern']))
+    global patterns = {key: fr"{value}" for key, value in pattern_dict.items()}
 
 #### --------uploaded data preparation-------- ####
 if uploaded_file is not None:
