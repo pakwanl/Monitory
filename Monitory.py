@@ -52,6 +52,7 @@ def get_driver():
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument('--remote-debugging-port=9222')
     
     return webdriver.Chrome(service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()), options = chrome_options)
 
@@ -60,7 +61,7 @@ def scrap(url):
     pdf_urls = []
     relevant_text = []
 
-    driver = driver = get_driver()
+    driver = get_driver()
     driver.set_page_load_timeout(30)
 
     try:
