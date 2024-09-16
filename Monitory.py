@@ -291,7 +291,7 @@ def scraping(df,patterns):
   return focus_df
 
 if uploaded_file is not None and st.button("Start Scraping!"):
-    scraped_data = scraping(filtered_bank)
+    scraped_data = scraping(filtered_bank,patterns)
     st.session_state['scraped_data'] = scraped_data
 
 #### -----------filter and display------------ ####
