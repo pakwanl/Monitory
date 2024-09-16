@@ -38,6 +38,7 @@ hide_st_style = """
     </style> 
     """
 st.markdown(hide_st_style, unsafe_allow_html = True)
+patterns = {}
 
 #### -----------function definition---------- ####
 
@@ -234,7 +235,6 @@ def update_pattterns(patt):
         patterns.update({key: fr"{value}" for key, value in pattern_dict.items()})
 
 #### ---------------data import--------------- ####
-patterns = {}
 uploaded_file = st.file_uploader("Upload here :lightning_cloud:", type=["xlsx"], accept_multiple_files=False)
 if uploaded_file is not None:
     try:
