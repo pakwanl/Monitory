@@ -100,7 +100,6 @@ def scrap(url):
         print(f"Timed out loading {url}. Skipping...")
         all_text.append(f"Timed out loading {url}. Skipping...")
         pdf_urls.append(f"Timed out loading {url}. Skipping...")
-        relevant_text.append(f"Timed out loading {url}. Skipping...")
         return "Timed out session, skip to the next product..."
     finally:
         driver.quit()
@@ -123,8 +122,6 @@ def scrap(url):
         for element in text_elements:
             text = element.get_text(strip=True)
             all_text.append(text)
-            if is_relevant(text):
-                relevant_text.append(text)
 
         for a_tag in soup.find_all('a', href=True):
             href = a_tag['href']
@@ -136,10 +133,9 @@ def scrap(url):
         print(f"Error occurred while making a request: {e}")
         all_text.append(f"Error occurred while making a request: {e}")
         pdf_urls.append(f"Error occurred while making a request: {e}")
-        relevant_text.append(f"Error occurred while making a request: {e}")
         return "Error during requests, skip to the next product..."
 
-    return ' '.join(all_text), '\n- '.join(pdf_urls), ' '.join(relevant_text)
+    return ' '.join(all_text), '\n- '.join(pdf_urls)
 
 def is_relevant(text, pattern=patterns):
    for description, patt in pattern.items():
@@ -256,7 +252,7 @@ if uploaded_file is not None:
   filtered_bank = df[df["Group"].isin(bank_filter)]
   
 #### --------------web scraping-------------- ####
-def scraping(df):
+def scraping(df,patterns):
   scraped = []
   pdf = []
   relevant = []
@@ -270,9 +266,10 @@ def scraping(df):
     result = scrap(url)
     current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d %H:%M:%S")
     if isinstance(result, tuple) and len(result) == 3:
-      scrap_text, _pdf, _relevant = result
+      scrap_text, _pdf, = result
       scraped.append(scrap_text)
       pdf.append(_pdf)
+      _relevant = is_relevant(scrap_text,patterns) 
       relevant.append(_relevant)
       timestamp.append(current_datetime)
     else:
