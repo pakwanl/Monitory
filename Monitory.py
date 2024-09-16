@@ -317,7 +317,7 @@ if 'scraped_data' in st.session_state:
     st.write(":sparkler: Filtered Information :sparkler:")
     st.write(filtered_data)
     df_xlsx = pd.DataFrame(scraped_data)
-    xlsx = to_excel(df_xlsx, index = False)
+    xlsx = to_excel(df_xlsx)
     st.download_button(label='📥 Download Scraped File',
                                     data=xlsx ,
                                     file_name= f"output_{current_datetime}.xlsx")
@@ -327,8 +327,7 @@ if 'scraped_data' in st.session_state:
         model = genai.GenerativeModel('gemini-1.5-flash')
         apply_summary_relevant(focus_df, model)
         apply_summary_all(focus_df, model)
-        df_xlsx = focus_df
-        xlsx = to_excel(df_xlsx, index = False)
+        xlsx = to_excel(focus_df)
         st.download_button(label='📥 Download summarized File',
                                         data=xlsx ,
                                         file_name= f"output_{current_datetime}.xlsx")
