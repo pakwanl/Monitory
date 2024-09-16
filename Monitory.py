@@ -225,7 +225,16 @@ def to_excel(df):
     processed_data = output.getvalue()
     return processed_data
 
+def update_pattterns(patt):
+    global patterns
+    unique_set = patt['set'].unique()
+    patterns = {}
+    for set_name in unique_set:
+        pattern_dict = dict(zip(patt[patt['set'] == set_name]['topic'], patt[patt['set'] == set_name]['pattern'])) 
+        patterns.update({key: fr"{value}" for key, value in pattern_dict.items()})
+
 #### ---------------data import--------------- ####
+patterns = {}
 uploaded_file = st.file_uploader("Upload here :lightning_cloud:", type=["xlsx"], accept_multiple_files=False)
 if uploaded_file is not None:
     try:
@@ -235,16 +244,11 @@ if uploaded_file is not None:
         
         patt = pd.read_excel(uploaded_file, sheet_name="pattern")
         patt = pd.DataFrame(patterns)
+        update_patterns(patt)
     except Exception as e:
         st.error(f"An error occurred while reading the file: {e}")
 else:
     st.warning(":receipt: fyi, It works best with **less** than 10 url samples!")
-
-unique_set = patt['set'].unique()
-for set_name in unique_set:
-    pattern_dict = dict(zip(patt[patt['set'] == set_name]['topic'], patt[patt['set'] == set_name]['pattern']))
-    global patterns 
-    patterns = {key: fr"{value}" for key, value in pattern_dict.items()}
 
 #### --------uploaded data preparation-------- ####
 if uploaded_file is not None:
