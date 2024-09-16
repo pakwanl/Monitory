@@ -265,7 +265,7 @@ def scraping(df,patterns):
   for url in filtered_bank['URL']:
     result = scrap(url)
     current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d %H:%M:%S")
-    if isinstance(result, tuple) and len(result) == 3:
+    if isinstance(result, tuple) and len(result) == 2:
       scrap_text, _pdf, = result
       scraped.append(scrap_text)
       pdf.append(_pdf)
