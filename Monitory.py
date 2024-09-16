@@ -141,7 +141,7 @@ def scrap(url):
     return ' '.join(all_text), '\n- '.join(pdf_urls), ' '.join(relevant_text)
 
 def is_relevant(text, patterns = None):
-    if patterns == None:
+    if patterns is None:
         global patterns
     for description, pattern in patterns.items():
       if re.search(pattern, text):
@@ -246,7 +246,7 @@ else:
 unique_set = patterns['set'].unique()
 for set_name in unique_set:
     pattern_dict = dict(zip(patterns[patterns['set'] == set_name]['topic'], patterns[patterns['set'] == set_name]['pattern']))
-    globals() patterns = {key: fr"{value}" for key, value in pattern_dict.items()}
+    global() patterns = {key: fr"{value}" for key, value in pattern_dict.items()}
 
 #### --------uploaded data preparation-------- ####
 if uploaded_file is not None:
