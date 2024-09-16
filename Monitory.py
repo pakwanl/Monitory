@@ -238,7 +238,7 @@ if uploaded_file is not None:
         st.write("Product", df)
         
         patt = pd.read_excel(uploaded_file, sheet_name="pattern")
-        patt = pd.DataFrame(patterns)
+        patt = pd.DataFrame(patt)
         patterns = update_patterns(patt)
     except Exception as e:
         st.error(f"An error occurred while reading the file: {e}")
