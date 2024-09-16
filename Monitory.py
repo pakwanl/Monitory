@@ -226,7 +226,7 @@ def to_excel(df):
     processed_data = output.getvalue()
     return processed_data
 
-def update_pattterns(patt):
+def update_patterns(patt):
     global patterns
     unique_set = patt['set'].unique()
     patterns = {}
