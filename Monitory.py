@@ -284,7 +284,6 @@ def scraping(df,patterns):
   focus_df['scraped'] = scraped
   focus_df['scraped'] = focus_df['scraped'].apply(cleanText)
   focus_df['relevant'] = relevant
-  focus_df['relevant'] = focus_df['relevant'].apply(cleanText)
   focus_df['pdf'] = pdf
     
   return focus_df
