@@ -141,7 +141,7 @@ def scrap(url):
     return ' '.join(all_text), '\n- '.join(pdf_urls), ' '.join(relevant_text)
 
 def is_relevant(text, patterns = None):
-    if patterns = None:
+    if patterns == None:
         global patterns
     for description, pattern in patterns.items():
       if re.search(pattern, text):
