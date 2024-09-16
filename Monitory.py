@@ -140,11 +140,11 @@ def scrap(url):
 
     return ' '.join(all_text), '\n- '.join(pdf_urls), ' '.join(relevant_text)
 
-def is_relevant(text, pattern = patterns):
-    for description, patt in pattern.items():
-      if re.search(patt, text):
-        return True
-    return False
+def is_relevant(text, pattern=patterns):
+   for description, patt in pattern.items():
+       if re.search(patt, text):
+           return True
+   return False
   
 def generate_content_with_retry(model, text, pdf_urls):
   try:
