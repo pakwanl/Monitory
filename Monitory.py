@@ -262,8 +262,8 @@ def scraping(df,patterns):
   progress_bar = st.progress(0)
   total_urls = len(df)
   progress_step = 100 / total_urls if total_urls > 0 else 0
-  idx = 0
-  for url in filtered_bank['URL']:
+    
+  for idx, url in enumerate(filtered_bank['URL']):
     result = scrap(url)
     current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d %H:%M:%S")
     if isinstance(result, tuple) and len(result) == 3:
@@ -277,6 +277,7 @@ def scraping(df,patterns):
       pdf.append(f"Unexpected result from scrap function: {result}")
       relevant.append(f"Unexpected result from scrap function: {result}")
       timestamp.append(current_datetime)
+        
     time.sleep(random.uniform(1,5))
     progress_bar.progress(int((idx + 1) * progress_step))
     
