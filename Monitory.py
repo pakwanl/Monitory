@@ -245,7 +245,8 @@ else:
 unique_set = patt['set'].unique()
 for set_name in unique_set:
     pattern_dict = dict(zip(patt[patt['set'] == set_name]['topic'], patt[patt['set'] == set_name]['pattern']))
-    global patterns = {key: fr"{value}" for key, value in pattern_dict.items()}
+    global patterns 
+    patterns = {key: fr"{value}" for key, value in pattern_dict.items()}
 
 #### --------uploaded data preparation-------- ####
 if uploaded_file is not None:
