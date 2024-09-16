@@ -56,7 +56,7 @@ def get_driver():
     
     return webdriver.Chrome(service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()), options = chrome_options)
 
-def scrap(url,patterns):
+def scrap(url):
     all_text = []
     pdf_urls = []
     relevant_text = []
@@ -121,7 +121,7 @@ def scrap(url,patterns):
         for element in text_elements:
             text = element.get_text(strip=True)
             if is_relevant(text,patterns):
-                relevant_text.append
+                relevant_text.append(text)
             all_text.append(text)
 
         for a_tag in soup.find_all('a', href=True):
@@ -253,7 +253,7 @@ if uploaded_file is not None:
   filtered_bank = df[df["Group"].isin(bank_filter)]
   
 #### --------------web scraping-------------- ####
-def scraping(df,patterns=patterns):
+def scraping(df,patterns):
   scraped = []
   pdf = []
   relevant = []
@@ -264,7 +264,7 @@ def scraping(df,patterns=patterns):
   progress_step = 100 / total_urls if total_urls > 0 else 0
   idx = 0
   for url in filtered_bank['URL']:
-    result = scrap(url,patterns=patterns)
+    result = scrap(url,patterns)
     current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d %H:%M:%S")
     if isinstance(result, tuple) and len(result) == 3:
       scrap_text, _pdf, _relevant = result
