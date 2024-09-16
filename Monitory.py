@@ -264,7 +264,7 @@ def scraping(df,patterns):
   progress_step = 100 / total_urls if total_urls > 0 else 0
   idx = 0
   for url in filtered_bank['URL']:
-    result = scrap(url,patterns)
+    result = scrap(url)
     current_datetime = datetime.datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%Y-%m-%d %H:%M:%S")
     if isinstance(result, tuple) and len(result) == 3:
       scrap_text, _pdf, _relevant = result
