@@ -227,6 +227,7 @@ def update_patterns(patt):
     for set_name in unique_set:
         pattern_dict = dict(zip(patt[patt['set'] == set_name]['topic'], patt[patt['set'] == set_name]['pattern'])) 
         patterns.update({key: fr"{value}" for key, value in pattern_dict.items()})
+    return patterns
 
 #### ---------------data import--------------- ####
 uploaded_file = st.file_uploader("Upload here :lightning_cloud:", type=["xlsx"], accept_multiple_files=False)
@@ -238,7 +239,7 @@ if uploaded_file is not None:
         
         patt = pd.read_excel(uploaded_file, sheet_name="pattern")
         patt = pd.DataFrame(patterns)
-        update_patterns(patt)
+        patterns = update_patterns(patt)
     except Exception as e:
         st.error(f"An error occurred while reading the file: {e}")
 else:
