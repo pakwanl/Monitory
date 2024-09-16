@@ -38,7 +38,6 @@ hide_st_style = """
     </style> 
     """
 st.markdown(hide_st_style, unsafe_allow_html = True)
-patterns = {}
 
 #### -----------function definition---------- ####
 
@@ -223,7 +222,6 @@ def to_excel(df):
     return processed_data
 
 def update_patterns(patt):
-    global patterns
     unique_set = patt['set'].unique()
     patterns = {}
     for set_name in unique_set:
