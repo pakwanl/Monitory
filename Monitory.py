@@ -320,13 +320,15 @@ if 'scraped_data' in st.session_state:
     st.download_button(label='📥 Download Scraped File',
                                     data=xlsx ,
                                     file_name= f"output_{current_datetime}.xlsx")
+    st.warning("Summarization will progress on filtered data, make sure to remove/apply needed filter(s) before progressing further")
     if st.button("Summary") :
+        filtered_data = pd.DataFRame(filtered_data)
         api_key = st.secrets["API"]
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel('gemini-1.5-flash')
-        apply_summary_relevant(focus_df, model)
-        apply_summary_all(focus_df, model)
-        xlsx = to_excel(focus_df)
+        apply_summary_relevant(filtered_data, model)
+        apply_summary_all(filtered_data, model)
+        xlsx = to_excel(filtered_data)
         st.download_button(label='📥 Download summarized File',
                                         data=xlsx ,
                                         file_name= f"output_{current_datetime}.xlsx")
