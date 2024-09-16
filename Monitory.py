@@ -303,7 +303,7 @@ if 'scraped_data' in st.session_state:
     filtered_group = scraped_data[scraped_data["Group"].isin(group_filter)]
     
     fi_filter = st.multiselect("Select FI", options=filtered_group["FI_name"].unique(), default=filtered_group["FI_name"].unique())
-    filtered_fi = filtered_group[filtered_group["FI"].isin(fi_filter)]
+    filtered_fi = filtered_group[filtered_group["FI_name"].isin(fi_filter)]
     
     product_type_filter = st.multiselect("Select product type", options=filtered_fi["Product_type"].unique(), default=filtered_fi["Product_type"].unique())
     filtered_type_product = filtered_fi[filtered_fi["Product_type"].isin(product_type_filter)]
