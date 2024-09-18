@@ -169,9 +169,13 @@ def generate_content_with_retry(model, text, pdf_urls):
     
 def apply_summary_relevant(focus_df, model):
     summaries = []
+    progress_bar = st.progress(0)
+    total_urls = len(focus_df)
+    progress_step = 100 / total_urls if total_urls > 0 else 0
     for idx, row in focus_df.iterrows():
         text = row['relevant']
         pdf_urls = row['pdf']
+        
         try:
             if len(text) > 90 :
                 summary = generate_content_with_retry(model, text, pdf_urls)
@@ -179,10 +183,13 @@ def apply_summary_relevant(focus_df, model):
             else:
                 summaries.append("No relevant text found.")
             time.sleep(3)  # avoid hitting API limits
+            progress_bar.progress(int((idx + 1) * progress_step))
         except RetryError as retry_err:
             summaries.append(f"Retries exhausted for index {idx}. Logging the issue and moving on: {retry_err}")
+            progress_bar.progress(int((idx + 1) * progress_step))
         except Exception as e:
             summaries.append(f"Error processing row {idx}: {e}")
+            progress_bar.progress(int((idx + 1) * progress_step))
     focus_df['summary_relevant'] = summaries
   
 def divide_text_into_chunks(text, chunk_size=8000):
@@ -191,6 +198,9 @@ def divide_text_into_chunks(text, chunk_size=8000):
 
 def apply_summary_all(focus_df, model):
     summaries = []
+    progress_bar = st.progress(0)
+    total_urls = len(focus_df)
+    progress_step = 100 / total_urls if total_urls > 0 else 0
     for idx, row in focus_df.iterrows():
         text = row['scraped']
         pdf_urls = row['pdf']
@@ -205,12 +215,16 @@ def apply_summary_all(focus_df, model):
                     time.sleep(3)
                 full_summary = ' '.join(summary_chunks)
                 summaries.append(full_summary)
+                progress_bar.progress(int((idx + 1) * progress_step))
             else:
                 summaries.append("No text found.")
+                progress_bar.progress(int((idx + 1) * progress_step))
         except RetryError as retry_err:
             summaries.append(f"Retries exhausted for index {idx}. Logging the issue and moving on: {retry_err}")
+            progress_bar.progress(int((idx + 1) * progress_step))
         except Exception as e:
             summaries.append(f"Error processing row {idx}: {e}")
+            progress_bar.progress(int((idx + 1) * progress_step))
     focus_df['summary_scraped'] = summaries
   
 def to_excel(df):
