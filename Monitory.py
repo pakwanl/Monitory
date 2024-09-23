@@ -215,16 +215,28 @@ def apply_summary_all(focus_df, model):
                     time.sleep(3)
                 full_summary = ' '.join(summary_chunks)
                 summaries.append(full_summary)
-                progress_bar.progress(int((idx + 1) * progress_step))
+                progress_value = (int((idx + 1) * progress_step))
+                if progress_value > 100:
+                    progress_value = 100
+                progress_bar.progress(progress_value)
             else:
                 summaries.append("No text found.")
-                progress_bar.progress(int((idx + 1) * progress_step))
+                progress_value = (int((idx + 1) * progress_step))
+                if progress_value > 100:
+                    progress_value = 100
+            progress_bar.progress(progress_value)
         except RetryError as retry_err:
             summaries.append(f"Retries exhausted for index {idx}. Logging the issue and moving on: {retry_err}")
-            progress_bar.progress(int((idx + 1) * progress_step))
+            progress_value = (int((idx + 1) * progress_step))
+            if progress_value > 100:
+                progress_value = 100
+            progress_bar.progress(progress_value)
         except Exception as e:
             summaries.append(f"Error processing row {idx}: {e}")
-            progress_bar.progress(int((idx + 1) * progress_step))
+            progress_value = (int((idx + 1) * progress_step))
+            if progress_value > 100:
+                progress_value = 100
+            progress_bar.progress(progress_value)
     focus_df['summary_scraped'] = summaries
   
 def to_excel(df):
