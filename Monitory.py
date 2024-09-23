@@ -146,21 +146,9 @@ def is_relevant(text, pattern):
   
 def generate_content_with_retry(model, text, pdf_urls):
   try:
-      # Base prompt
-      focus = "interest rate"
-      base_prompt = (
-
-       f" Please summarize the following product information, with a focus on the {focus}. Include:"
-       "- The **name of the product**."
-       "- **Interest rate** details, such as if it is per month or per year. If only monthly interest is provided, report as 'แจ้งเฉพาะรายเดือน'."
-       "- **Installment period** if applicable."
-       "- Include any **warnings or important information** that customers should be aware of, such as: 'ใช้เท่าที่จำเป็นและชำระคืนได้เต็มจำนวนตามกำหนด จะได้ไม่เสียดอกเบี้ย 16% ต่อปี'."
-       "- If no interest rate information is found, mention 'ไม่มีการแจ้งข้อมูลอัตราดอกเบี้ยเป็นข้อมูลข้อความ'."
-
-       f"Additionally, if there is a link to a **PDF fact sheet** or **sale sheet** in {pdf_urls}, mention if the sheet was found. If no sheet is found, note: 'No fact/sale sheet was found during scraping, please proceed to the website manually.' "
-      )
-
-      additional_instructions = ""
+      focus = prompt['prompt'].loc(prompt['head'] == 'focus')
+      base_prompt = prompt['prompt'].loc(prompt['head'] == 'base_prompt')
+      additional_instructions = prompt['prompt'].loc(prompt['head'] == 'add_prompt')
       full_prompt = f"{base_prompt} {additional_instructions}; {text}"
       response = model.generate_content(full_prompt)
       return response.text
@@ -256,6 +244,10 @@ if uploaded_file is not None:
         patt = pd.read_excel(uploaded_file, sheet_name="pattern")
         patt = pd.DataFrame(patt)
         patterns = update_patterns(patt)
+
+        prompt = pd.read_excel(uploaded_file, sheet_name="prompt")
+        prompt = pd.DataFrame(prompt)
+        st.write("Prompt", prompt)
     except Exception as e:
         st.error(f"An error occurred while reading the file: {e}")
 else:
