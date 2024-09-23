@@ -146,20 +146,25 @@ def is_relevant(text, pattern):
   
 def generate_content_with_retry(model, text, pdf_urls):
   try:
-      focus = prompt['prompt'].loc(prompt['head'] == 'focus')
-      base_prompt = prompt['prompt'].loc(prompt['head'] == 'base_prompt')
-      additional_instructions = prompt['prompt'].loc(prompt['head'] == 'add_prompt')
+      focus = prompt.loc[prompt['head'] == 'focus', 'prompt'].values[0]
+      base_prompt = prompt.loc[prompt['head'] == 'base_prompt', 'prompt'].values[0]
+      additional_instructions = prompt.loc[prompt['head'] == 'add_prompt', 'prompt'].values[0]
+      
       full_prompt = f"{base_prompt} {additional_instructions}; {text}"
       response = model.generate_content(full_prompt)
       return response.text
   except Exception as e:
-      raise
+      if retries > 0:
+           return generate_content_with_retry(model, text, pdf_urls, retries - 1)
+       else:
+           st.error(f"Failed to generate content after retries: {e}")
+           raise
     
 def apply_summary_relevant(focus_df, model):
     summaries = []
-    progress_bar = st.progress(0)
     total_urls = len(focus_df)
-    progress_step = 100 / total_urls if total_urls > 0 else 0
+    progress_step = 100 / total_urls
+    progress_bar = st.progress(0)
     for idx, row in focus_df.iterrows():
         text = row['relevant']
         pdf_urls = row['pdf']
@@ -171,13 +176,20 @@ def apply_summary_relevant(focus_df, model):
             else:
                 summaries.append("No relevant text found.")
             time.sleep(3)  # avoid hitting API limits
-            progress_bar.progress(int((idx + 1) * progress_step))
+            progress_value = int((idx + 1) * progress_step)
+            if progress_value > 100:
+                progress_value = 100
+            progress_bar.progress(progress_value)
         except RetryError as retry_err:
-            summaries.append(f"Retries exhausted for index {idx}. Logging the issue and moving on: {retry_err}")
-            progress_bar.progress(int((idx + 1) * progress_step))
+            progress_value = int((idx + 1) * progress_step)
+            if progress_value > 100:
+                progress_value = 100
+            progress_bar.progress(progress_value)
         except Exception as e:
-            summaries.append(f"Error processing row {idx}: {e}")
-            progress_bar.progress(int((idx + 1) * progress_step))
+            progress_value = int((idx + 1) * progress_step)
+            if progress_value > 100:
+                progress_value = 100
+            progress_bar.progress(progress_value)
     focus_df['summary_relevant'] = summaries
   
 def divide_text_into_chunks(text, chunk_size=8000):
@@ -186,9 +198,9 @@ def divide_text_into_chunks(text, chunk_size=8000):
 
 def apply_summary_all(focus_df, model):
     summaries = []
-    progress_bar = st.progress(0)
     total_urls = len(focus_df)
-    progress_step = 100 / total_urls if total_urls > 0 else 0
+    progress_step = 100 / total_urls
+    progress_bar = st.progress(0)
     for idx, row in focus_df.iterrows():
         text = row['scraped']
         pdf_urls = row['pdf']
@@ -249,7 +261,7 @@ if uploaded_file is not None:
         prompt = pd.DataFrame(prompt)
         st.write("Prompt", prompt)
     except Exception as e:
-        st.error(f"An error occurred while reading the file: {e}")
+        st.error(f"Error processing file: {e}")
 else:
     st.warning(":receipt: fyi, It works best with **less** than 10 url samples!")
 
