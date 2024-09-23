@@ -156,7 +156,7 @@ def generate_content_with_retry(model, text, pdf_urls):
   except Exception as e:
       if retries > 0:
            return generate_content_with_retry(model, text, pdf_urls, retries - 1)
-       else:
+      else:
            st.error(f"Failed to generate content after retries: {e}")
            raise
     
