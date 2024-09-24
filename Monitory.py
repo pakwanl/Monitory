@@ -46,6 +46,12 @@ def cleanText(text):
     newText = text.translate(str.maketrans('', '', newPunc))  # Remove unnecessary punctuation
     newText = ' '.join(newText.split())  # Keep only one white space
     return newText
+
+def cleanPrompt(text):
+    newPunc = ''.join(set('!#\*/;@[\\]^_`|~'))
+    newText = text.translate(str.maketrans('', '', newPunc))  # Remove unnecessary punctuation
+    newText = ' '.join(newText.split())  # Keep only one white space
+    return newText
     
 def get_driver():
     chrome_options = Options()
@@ -146,9 +152,8 @@ def is_relevant(text, pattern):
   
 def generate_content_with_retry(model, text, pdf_urls, retries=3):
    try:
-       # focus = "interest rate"
        # base_prompt = (
-       #     f" Please summarize the following product information, with a focus on the {focus}. Include:"
+       #     f" Please summarize the following product information, with a focus on the interest rate. Include:"
        #     "- The **name of the product**."
        #     "- **Interest rate** details, such as if it is per month or per year. If only monthly interest is provided, report as 'แจ้งเฉพาะรายเดือน'."
        #     "- **Installment period** if applicable."
@@ -160,9 +165,11 @@ def generate_content_with_retry(model, text, pdf_urls, retries=3):
        # full_prompt = f"{base_prompt} {additional_instructions}; {text}"
        # response = model.generate_content(full_prompt)
        
-       focus = str(prompt.loc[prompt['head'] == 'focus', 'prompt'].values[0])
-       base_prompt = str(prompt.loc[prompt['head'] == 'base_prompt', 'prompt'].values[0])
-       additional_instructions = str(prompt.loc[prompt['head'] == 'add_prompt', 'prompt'].values[0])
+       base_prompt = prompt.loc[prompt['head'] == 'base_prompt', 'prompt'].values[0]
+       additional_instructions = prompt.loc[prompt['head'] == 'add_prompt', 'prompt'].values[0]
+       base_prompt  = cleanPrompt(base_prompt)
+       additional_instructions = cleanPrompt(additional_instructions)
+       
        full_prompt = f"{base_prompt} {additional_instructions}; {text}"
        response = model.generate_content(full_prompt)
        return response.text
