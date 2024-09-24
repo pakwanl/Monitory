@@ -374,7 +374,7 @@ if 'scraped_data' in st.session_state:
                                     data=xlsx ,
                                     file_name= f"output_{current_datetime}.xlsx")
     st.warning("Summarization will progress on filtered data, make sure to remove/apply needed filter(s) before progressing further")
-    api_key = st.text_input("Google API")
+    api_key = st.text_input("Google API (Generate from https://aistudio.google.com/app/apikey)")
     if st.button("Summary") :
         filtered_data = pd.DataFrame(filtered_data)
         genai.configure(api_key=api_key)
@@ -387,3 +387,32 @@ if 'scraped_data' in st.session_state:
         st.download_button(label='📥 Download summarized File',
                                         data=xlsx ,
                                         file_name= f"output_{current_datetime}.xlsx")
+        
+    if 'scraped_data' is not in st.session_state and uploaded_file is not None:
+        group_filter = st.multiselect("Select Group", options=focus_df["Group"].unique(), default=focus_df["Group"].unique())
+        filtered_group = focus_df[focus_df["Group"].isin(group_filter)]
+        
+        fi_filter = st.multiselect("Select FI", options=filtered_group["FI_name"].unique(), default=filtered_group["FI_name"].unique())
+        filtered_fi = filtered_group[filtered_group["FI_name"].isin(fi_filter)]
+        
+        product_type_filter = st.multiselect("Select product type", options=filtered_fi["Product_type"].unique(), default=filtered_fi["Product_type"].unique())
+        filtered_type_product = filtered_fi[filtered_fi["Product_type"].isin(product_type_filter)]
+        
+        filtered_data = focus_df[
+            (focus_df["Group"].isin(group_filter)) &
+            (focus_df["FI_name"].isin(fi_filter)) &
+            (focus_df["Product_type"].isin(product_type_filter))]
+        st.warning("Summarization will progress on filtered data, make sure to remove/apply needed filter(s) before progressing further")
+        api_key = st.text_input("Google API (Generate from https://aistudio.google.com/app/apikey)")
+        if st.button("Summary") :
+            filtered_data = pd.DataFrame(filtered_data)
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            st.write("Summary on relevant")
+            apply_summary_relevant(filtered_data, model)
+            st.write("Summary on full text")
+            apply_summary_all(filtered_data, model)
+            xlsx = to_excel(filtered_data)
+            st.download_button(label='📥 Download summarized File',
+                                            data=xlsx ,
+                                            file_name= f"output_{current_datetime}.xlsx")
