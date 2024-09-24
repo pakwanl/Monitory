@@ -146,17 +146,23 @@ def is_relevant(text, pattern):
   
 def generate_content_with_retry(model, text, pdf_urls, retries=3):
    try:
-       focus = "interest rate"
-       base_prompt = (
-           f" Please summarize the following product information, with a focus on the {focus}. Include:"
-           "- The **name of the product**."
-           "- **Interest rate** details, such as if it is per month or per year. If only monthly interest is provided, report as 'แจ้งเฉพาะรายเดือน'."
-           "- **Installment period** if applicable."
-           "- Include any **warnings or important information** that customers should be aware of, such as: 'ใช้เท่าที่จำเป็นและชำระคืนได้เต็มจำนวนตามกำหนด จะได้ไม่เสียดอกเบี้ย 16% ต่อปี'."
-           "- If no interest rate information is found, mention 'ไม่มีการแจ้งข้อมูลอัตราดอกเบี้ยเป็นข้อมูลข้อความ'."
-           f"Additionally, if there is a link to a **PDF fact sheet** or **sale sheet** in {pdf_urls}, mention if the sheet was found. If no sheet is found, note: 'No fact/sale sheet was found during scraping, please proceed to the website manually.' ")
+       # focus = "interest rate"
+       # base_prompt = (
+       #     f" Please summarize the following product information, with a focus on the {focus}. Include:"
+       #     "- The **name of the product**."
+       #     "- **Interest rate** details, such as if it is per month or per year. If only monthly interest is provided, report as 'แจ้งเฉพาะรายเดือน'."
+       #     "- **Installment period** if applicable."
+       #     "- Include any **warnings or important information** that customers should be aware of, such as: 'ใช้เท่าที่จำเป็นและชำระคืนได้เต็มจำนวนตามกำหนด จะได้ไม่เสียดอกเบี้ย 16% ต่อปี'."
+       #     "- If no interest rate information is found, mention 'ไม่มีการแจ้งข้อมูลอัตราดอกเบี้ยเป็นข้อมูลข้อความ'."
+       #     f"Additionally, if there is a link to a **PDF fact sheet** or **sale sheet** in {pdf_urls}, mention if the sheet was found. If no sheet is found, note: 'No fact/sale sheet was found during scraping, please proceed to the website manually.' ")
 
-       additional_instructions = ""
+       # additional_instructions = ""
+       # full_prompt = f"{base_prompt} {additional_instructions}; {text}"
+       # response = model.generate_content(full_prompt)
+       
+       focus = str(prompt.loc[prompt['head'] == 'focus', 'prompt'].values[0])
+       base_prompt = str(prompt.loc[prompt['head'] == 'base_prompt', 'prompt'].values[0])
+       additional_instructions = str(prompt.loc[prompt['head'] == 'add_prompt', 'prompt'].values[0])
        full_prompt = f"{base_prompt} {additional_instructions}; {text}"
        response = model.generate_content(full_prompt)
        return response.text
