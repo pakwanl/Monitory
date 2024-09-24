@@ -144,19 +144,18 @@ def is_relevant(text, pattern):
            return True
    return False
   
-def generate_content_with_retry(model, text, pdf_urls):
-  try:
-      focus = prompt.loc[prompt['head'] == 'focus', 'prompt'].values[0]
-      base_prompt = prompt.loc[prompt['head'] == 'base_prompt', 'prompt'].values[0]
-      additional_instructions = prompt.loc[prompt['head'] == 'add_prompt', 'prompt'].values[0]
-      
-      full_prompt = f"{base_prompt} {additional_instructions}; {text}"
-      response = model.generate_content(full_prompt)
-      return response.text
-  except Exception as e:
-      if retries > 0:
+def generate_content_with_retry(model, text, pdf_urls, retries=3):
+   try:
+       focus = prompt.loc[prompt['head'] == 'focus', 'prompt'].values[0]
+       base_prompt = prompt.loc[prompt['head'] == 'base_prompt', 'prompt'].values[0]
+       additional_instructions = prompt.loc[prompt['head'] == 'add_prompt', 'prompt'].values[0]
+       full_prompt = f"{base_prompt} {additional_instructions}; {text}"
+       response = model.generate_content(full_prompt)
+       return response.text
+   except Exception as e:
+       if retries > 0:
            return generate_content_with_retry(model, text, pdf_urls, retries - 1)
-      else:
+       else:
            st.error(f"Failed to generate content after retries: {e}")
            raise
     
