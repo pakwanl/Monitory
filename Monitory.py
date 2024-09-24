@@ -181,11 +181,13 @@ def apply_summary_relevant(focus_df, model):
                 progress_value = 100
             progress_bar.progress(progress_value)
         except RetryError as retry_err:
+            summaries.append(f"Retries exhausted for index {idx}. Logging the issue and moving on: {retry_err}")
             progress_value = int((idx + 1) * progress_step)
             if progress_value > 100:
                 progress_value = 100
             progress_bar.progress(progress_value)
         except Exception as e:
+            summaries.append(f"Error processing row {idx}: {e}")
             progress_value = int((idx + 1) * progress_step)
             if progress_value > 100:
                 progress_value = 100
