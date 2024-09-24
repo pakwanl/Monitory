@@ -388,7 +388,7 @@ if 'scraped_data' in st.session_state:
                                         data=xlsx ,
                                         file_name= f"output_{current_datetime}.xlsx")
         
-    if 'scraped_data' is not in st.session_state and uploaded_file is not None:
+    if 'scraped_data' not in st.session_state and uploaded_file is not None:
         group_filter = st.multiselect("Select Group", options=focus_df["Group"].unique(), default=focus_df["Group"].unique())
         filtered_group = focus_df[focus_df["Group"].isin(group_filter)]
         
