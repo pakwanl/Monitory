@@ -374,9 +374,9 @@ if 'scraped_data' in st.session_state:
                                     data=xlsx ,
                                     file_name= f"output_{current_datetime}.xlsx")
     st.warning("Summarization will progress on filtered data, make sure to remove/apply needed filter(s) before progressing further")
+    api_key = st.text_input("Google API")
     if st.button("Summary") :
         filtered_data = pd.DataFrame(filtered_data)
-        api_key = st.secrets["API"]
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel('gemini-1.5-flash')
         st.write("Summary on relevant")
