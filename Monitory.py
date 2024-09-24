@@ -362,6 +362,7 @@ if 'scraped_data' in st.session_state:
         apply_summary_relevant(filtered_data, model)
         apply_summary_all(filtered_data, model)
         xlsx = to_excel(filtered_data)
+        st.write(filtered_data)
         st.download_button(label='📥 Download summarized File',
                                         data=xlsx ,
                                         file_name= f"output_{current_datetime}.xlsx")
