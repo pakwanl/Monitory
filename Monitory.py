@@ -358,10 +358,11 @@ if 'scraped_data' in st.session_state:
         api_key = st.secrets["API"]
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel('gemini-1.5-flash')
+        st.write("Summary on relevant")
         apply_summary_relevant(filtered_data, model)
+        st.write("Summary on full text")
         apply_summary_all(filtered_data, model)
         xlsx = to_excel(filtered_data)
-        st.write(filtered_data)
         st.download_button(label='📥 Download summarized File',
                                         data=xlsx ,
                                         file_name= f"output_{current_datetime}.xlsx")
